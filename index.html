@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZOON ⚡ للشحن الرقمي</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ZOON">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Tahoma','Segoe UI',sans-serif; }
+:root { --gold:#d4af37; --gold2:#f5d76e; --black:#0a0a0a; --dark:#141414; --card:#1c1c1c; }
+body { background:var(--black); color:#fff; min-height:100vh; padding-bottom:80px; }
+a { color:var(--gold); text-decoration:none; }
+button { cursor:pointer; font-family:inherit; }
+input, select { font-family:inherit; }
+.header { background:linear-gradient(135deg,#000,#1a1a1a); border-bottom:2px solid var(--gold); padding:12px 15px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.logo { font-size:22px; font-weight:bold; color:var(--gold); }
+.balance-pill { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#000; padding:6px 12px; border-radius:20px; font-weight:bold; font-size:14px; }
+.menu-btn { background:none; border:2px solid var(--gold); color:var(--gold); padding:6px 12px; border-radius:8px; font-size:20px; }
+.sidebar { position:fixed; top:0; right:-300px; width:280px; height:100vh; background:var(--dark); border-left:2px solid var(--gold); z-index:200; transition:.3s; padding:20px; overflow-y:auto; }
+.sidebar.open { right:0; }
+.sidebar .close { float:left; color:var(--gold); font-size:24px; background:none; border:none; }
+.sidebar .logo { display:block; text-align:center; margin-bottom:25px; font-size:26px; }
+.sidebar a.nav, .sidebar button.nav { display:block; width:100%; text-align:right; padding:14px 15px; margin-bottom:8px; background:var(--card); color:#fff; border:1px solid #333; border-radius:10px; font-size:15px; }
+.sidebar a.nav:hover, .sidebar button.nav:hover { background:var(--gold); color:#000; }
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:150; display:none; }
+.overlay.show { display:block; }
+.container { max-width:900px; margin:0 auto; padding:15px; }
+.hero { background:linear-gradient(135deg,#1a1a1a,#000); border:2px solid var(--gold); border-radius:16px; padding:30px 20px; text-align:center; margin-bottom:20px; }
+.hero h1 { color:var(--gold); font-size:26px; margin-bottom:10px; }
+.hero p { color:#ccc; font-size:15px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+.game-card { background:var(--card); border:1px solid #333; border-radius:14px; overflow:hidden; cursor:pointer; }
+.game-card:hover { border-color:var(--gold); }
+.game-card img { width:100%; height:130px; object-fit:cover; display:block; }
+.game-card .title { padding:10px; text-align:center; font-weight:bold; color:var(--gold); }
+.section-title { color:var(--gold); font-size:20px; margin:20px 0 12px; border-right:4px solid var(--gold); padding-right:10px; }
+.offer-card { background:var(--card); border:1px solid #333; border-radius:12px; padding:15px; display:flex; flex-direction:column; gap:8px; }
+.offer-card .name { font-weight:bold; color:#fff; font-size:15px; }
+.offer-card .price { color:var(--gold); font-size:18px; font-weight:bold; }
+.btn { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#000; border:none; padding:12px; border-radius:10px; font-weight:bold; font-size:15px; width:100%; }
+.btn:hover { opacity:.9; }
+.btn-outline { background:none; border:2px solid var(--gold); color:var(--gold); }
+.btn-danger { background:#c0392b; color:#fff; }
+.btn-ok { background:#27ae60; color:#fff; }
+.btn-sm { padding:7px 11px; font-size:13px; width:auto; }
+.form-box { background:var(--card); border:1px solid #333; border-radius:14px; padding:20px; max-width:420px; margin:20px auto; }
+.form-box.wide { max-width:100%; }
+.form-box h2 { color:var(--gold); text-align:center; margin-bottom:20px; }
+.form-group { margin-bottom:14px; }
+.form-group label { display:block; margin-bottom:6px; color:#ccc; font-size:14px; }
+.inp, .form-group input, .form-group select { width:100%; padding:12px; background:#0a0a0a; border:1px solid #333; border-radius:8px; color:#fff; font-size:15px; }
+.inp:focus, .form-group input:focus { outline:none; border-color:var(--gold); }
+select.inp option { background:#0a0a0a; }
+.switch-link { text-align:center; margin-top:15px; font-size:14px; color:#888; }
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; background:var(--card); border-radius:12px; overflow:hidden; margin-top:10px; }
+th, td { padding:10px; text-align:right; border-bottom:1px solid #333; font-size:13px; }
+th { background:#0a0a0a; color:var(--gold); white-space:nowrap; }
+.status { padding:3px 8px; border-radius:6px; font-size:12px; font-weight:bold; white-space:nowrap; }
+.status.pending { background:#f39c12; color:#000; }
+.status.approved { background:#27ae60; color:#fff; }
+.status.rejected { background:#c0392b; color:#fff; }
+.toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:var(--gold); color:#000; padding:14px 24px; border-radius:10px; font-weight:bold; z-index:999; max-width:90%; text-align:center; display:none; }
+.modal { position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:300; display:none; align-items:center; justify-content:center; padding:15px; }
+.modal.show { display:flex; }
+.modal-content { background:var(--card); border:2px solid var(--gold); border-radius:16px; padding:20px; max-width:450px; width:100%; max-height:90vh; overflow-y:auto; }
+.modal-content h3 { color:var(--gold); margin-bottom:15px; text-align:center; }
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--dark); border-top:2px solid var(--gold); display:flex; justify-content:space-around; padding:8px 0; z-index:99; }
+.bottom-nav button { background:none; border:none; color:#888; font-size:12px; display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 10px; }
+.bottom-nav button.active { color:var(--gold); }
+.bottom-nav button span:first-child { font-size:20px; }
+.page { display:none; }
+.page.active { display:block; }
+.empty { text-align:center; padding:30px; color:#666; }
+.badge { background:var(--gold); color:#000; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:bold; }
+.row { display:flex; gap:8px; align-items:center; }
+.row > * { flex:1; min-width:0; }
+.row > .btn-sm { flex:0 0 auto; }
+.meta { font-size:12px; color:#888; margin:8px 0; line-height:1.7; }
+.cv-result { margin-top:12px; text-align:center; font-size:20px; font-weight:bold; color:var(--gold); background:#0a0a0a; border:1px dashed var(--gold); border-radius:10px; padding:14px; }
+.tabs { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:16px; }
+.tabs button { background:var(--card); color:var(--gold); border:2px solid var(--gold); border-radius:8px; padding:10px 5px; font-size:13px; }
+.tabs button.on { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#000; font-weight:bold; }
+.stats { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:14px; }
+.stat { background:var(--card); border:1px solid #333; border-radius:12px; padding:14px; text-align:center; }
+.stat .ic { font-size:22px; }
+.stat .num { color:var(--gold); font-size:20px; font-weight:bold; margin:4px 0; }
+.stat .lbl { color:#aaa; font-size:12px; }
+.box { background:var(--card); border:1px solid #333; border-radius:12px; padding:14px; margin-bottom:14px; }
+.box h4 { color:var(--gold); margin-bottom:10px; font-size:15px; }
+.box .row { margin-bottom:8px; }
+.act-row { display:flex; gap:6px; }
+.small { font-size:12px; color:#999; }
+.warn { background:#3a1d1d; border:1px solid #c0392b; color:#ffb4a8; border-radius:10px; padding:12px; font-size:13px; line-height:1.8; margin-bottom:14px; display:none; }
+body.adm .header, body.adm .bottom-nav { display:none !important; }
+
+/* ===== تصميم جديد (دارك + ذهبي) ===== */
+body { background:radial-gradient(1200px 500px at 50% -150px,#2a2208 0%,var(--black) 60%) fixed; padding-bottom:110px; }
+.header { background:linear-gradient(135deg,#050505,#1b1608); border-bottom:1px solid rgba(212,175,55,.45); padding:10px 14px; box-shadow:0 6px 24px rgba(0,0,0,.5); }
+.header .logo { font-size:22px; letter-spacing:.5px; text-shadow:0 0 18px rgba(212,175,55,.35); }
+.hdr-end { display:flex; align-items:center; gap:10px; }
+.balance-pill { display:flex; align-items:center; gap:8px; border:none; padding:5px 12px 5px 6px; }
+.balance-pill .plus { background:#000; color:var(--gold2); width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; line-height:1; }
+.menu-btn { border-width:1px; padding:5px 11px; border-radius:12px; }
+.section-title { border-right:none; padding-right:0; display:flex; align-items:center; gap:8px; }
+.searchbar { display:flex; align-items:center; gap:10px; background:linear-gradient(135deg,#1a1608,#141414); border:1px solid rgba(212,175,55,.35); border-radius:26px; padding:4px 16px; margin:6px 0 18px; }
+.searchbar input { flex:1; background:none; border:none; color:#fff; font-size:15px; padding:12px 0; outline:none; }
+.grid.g3 { grid-template-columns:repeat(3,1fr); gap:14px 10px; }
+.game-card { background:none; border:none; border-radius:0; text-align:center; }
+.game-card img { height:auto; aspect-ratio:1/1; border-radius:22px; border:1px solid rgba(212,175,55,.35); box-shadow:0 6px 18px rgba(0,0,0,.5); transition:transform .15s; }
+.game-card:active img { transform:scale(.96); }
+.game-card .title { padding:8px 2px 0; font-size:13px; color:#fff; font-weight:600; }
+.cat-card { background:linear-gradient(160deg,#211b08,#141414); border:1px solid rgba(212,175,55,.3); border-radius:22px; padding:16px 8px 12px; text-align:center; cursor:pointer; }
+.cat-card .circ { width:62px; height:62px; margin:0 auto 8px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#000; font-size:26px; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 4px rgba(212,175,55,.15); }
+.cat-card .name { font-weight:bold; font-size:14px; }
+.addon-card { background:linear-gradient(160deg,#211b08,#141414); border:1px solid rgba(212,175,55,.3); border-radius:22px; padding:14px 10px; text-align:center; display:flex; flex-direction:column; gap:8px; cursor:pointer; }
+.addon-card .name { font-weight:bold; font-size:14px; line-height:1.5; min-height:42px; display:flex; align-items:center; justify-content:center; }
+.addon-card .price { color:var(--gold2); font-size:18px; font-weight:bold; }
+.addon-card .go { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#000; border-radius:16px; padding:9px; font-weight:bold; font-size:14px; }
+.form-box { border-radius:22px; border-color:rgba(212,175,55,.25); background:linear-gradient(160deg,#181510,#141414); }
+.btn { border-radius:16px; }
+.inp, .form-group input, .form-group select { border-radius:14px; }
+.offer-card { border-radius:20px; }
+/* تنقل سفلي عايم */
+.bottom-nav { left:14px; right:14px; bottom:14px; border:1px solid rgba(212,175,55,.45); border-radius:30px; background:linear-gradient(135deg,rgba(20,17,6,.96),rgba(10,10,10,.96)); box-shadow:0 10px 30px rgba(0,0,0,.65); padding:7px 8px; max-width:520px; margin:0 auto; }
+.bottom-nav button { flex:1; border-radius:22px; padding:7px 4px; font-size:11px; }
+.bottom-nav button.active { background:rgba(212,175,55,.16); color:var(--gold2); }
+.toast { bottom:100px; }
+/* نافذة الشراء (من تحت) */
+.modal.sheetmode { align-items:flex-end; padding:0; }
+.sheet { width:100%; max-width:520px; margin:0 auto; background:linear-gradient(180deg,#1c1708,#0e0e0e); border:1px solid rgba(212,175,55,.45); border-bottom:none; border-radius:28px 28px 0 0; padding:22px 18px 26px; animation:up .22s ease-out; }
+@keyframes up { from { transform:translateY(40px); opacity:0; } to { transform:none; opacity:1; } }
+.sheet-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; }
+.sheet-head h3 { color:#fff; font-size:17px; margin:0; text-align:right; flex:1; }
+.pricepill { background:#000; color:var(--gold2); border:1px solid rgba(212,175,55,.5); border-radius:18px; padding:7px 14px; font-weight:bold; }
+.fld { background:#0a0a0a; border:1px solid rgba(212,175,55,.25); border-radius:20px; padding:10px 18px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
+.fld small { color:#999; font-size:12px; }
+.fld b { color:var(--gold2); font-size:18px; }
+.sheet input.pin { width:100%; background:#0a0a0a; border:1px solid rgba(212,175,55,.35); border-radius:20px; color:#fff; padding:15px 18px; font-size:16px; margin-bottom:14px; outline:none; }
+.sheet input.pin:focus { border-color:var(--gold); }
+.pnote { background:rgba(212,175,55,.1); border:1px dashed rgba(212,175,55,.55); color:var(--gold2); border-radius:18px; padding:11px 14px; margin-bottom:12px; font-size:13px; line-height:1.8; }
+.sheet-btns { display:flex; gap:10px; }
+.sheet-btns .btn { flex:1.3; border-radius:20px; padding:14px; }
+.sheet-btns .btn-cancel { flex:1; background:none; border:1px solid #c0392b; color:#e74c3c; border-radius:20px; font-weight:bold; font-size:15px; }
+/* الطلبات */
+.chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+.chip { background:#17140a; color:#ddd; border:1px solid rgba(212,175,55,.3); border-radius:22px; padding:8px 14px; font-size:13px; display:flex; align-items:center; gap:7px; }
+.chip i { font-style:normal; background:#2a2412; color:var(--gold2); border-radius:12px; padding:1px 8px; font-size:12px; }
+.chip.on { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#000; font-weight:bold; border-color:transparent; }
+.chip.on i { background:rgba(0,0,0,.18); color:#000; }
+.totalpill { display:inline-block; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#000; font-weight:bold; border-radius:22px; padding:9px 18px; margin-bottom:14px; }
+.ord { display:flex; align-items:center; justify-content:space-between; gap:10px; background:linear-gradient(160deg,#181510,#121212); border:1px solid rgba(212,175,55,.2); border-radius:26px; padding:14px 18px; margin-bottom:10px; }
+.ord .l { text-align:left; direction:ltr; font-weight:bold; color:var(--gold2); font-size:16px; white-space:nowrap; }
+.ord .m { text-align:center; font-size:12px; color:#aaa; }
+.ord .m .st { font-weight:bold; font-size:14px; margin-bottom:3px; }
+.ord .m .st.approved { color:#2ecc71; } .ord .m .st.rejected { color:#e74c3c; } .ord .m .st.pending { color:#f39c12; }
+.ord .r { text-align:right; flex:1; min-width:0; }
+.ord .r b { display:block; font-size:14px; }
+.ord .r span { color:#888; font-size:12px; direction:ltr; display:inline-block; }
+/* ===== ميزات v2: شريط إعلان، واتساب عايم، سيرفرات، صور، طرق دفع ===== */
+.ticker { background:linear-gradient(90deg,#2a2208,#14110a); border-bottom:1px solid rgba(212,175,55,.35); color:var(--gold2); font-size:13px; overflow:hidden; white-space:nowrap; padding:7px 0; display:none; position:relative; z-index:90; }
+.ticker .tk { display:inline-block; animation:tk 24s linear infinite; }
+.ticker a { color:inherit; text-decoration:underline; }
+@keyframes tk { from { transform:translateX(100%); } to { transform:translateX(-100%); } }
+body.adm .ticker, body.adm .wafab { display:none !important; }
+.wafab { position:fixed; left:16px; bottom:100px; width:54px; height:54px; border-radius:50%; background:#25d366; display:none; align-items:center; justify-content:center; z-index:98; box-shadow:0 8px 22px rgba(0,0,0,.55); border:2px solid rgba(255,255,255,.3); font-size:27px; text-decoration:none; color:#fff; }
+.wafab.show { display:flex; }
+.srv { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 14px; align-items:center; }
+.cat-card .circ { overflow:hidden; }
+.cat-card .circ img { width:100%; height:100%; object-fit:cover; display:block; }
+.addon-card .aimg { width:60px; height:60px; border-radius:18px; object-fit:cover; margin:0 auto; border:1px solid rgba(212,175,55,.3); display:block; }
+.sheet { max-height:92vh; overflow-y:auto; }
+.walbox { background:#0a0a0a; border:1px dashed var(--gold); border-radius:16px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; }
+.walbox b { direction:ltr; word-break:break-all; color:var(--gold2); font-size:16px; }
+.qrimg { display:block; max-width:230px; width:100%; margin:0 auto 12px; border-radius:14px; background:#fff; padding:6px; }
+.imgfld { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+.imgfld img { width:64px; height:64px; object-fit:cover; border-radius:12px; border:1px solid #333; background:#111; }
+.thumb { width:34px; height:34px; border-radius:9px; object-fit:cover; vertical-align:middle; margin-left:6px; flex:0 0 34px !important; }
+.off { opacity:.5; }
+.tag { background:#2a2412; color:var(--gold2); border-radius:10px; padding:1px 8px; font-size:11px; margin:0 3px; display:inline-block; }
+.reason { color:#ffb4a8; font-size:12px; margin-top:4px; line-height:1.6; }
+.lb2 { display:block; color:#aaa; font-size:12px; margin:10px 0 4px; }
+.modal-content textarea, textarea.inp { width:100%; padding:12px; background:#0a0a0a; border:1px solid #333; border-radius:14px; color:#fff; font-size:15px; min-height:80px; font-family:inherit; }
+.chk { display:flex; align-items:center; gap:8px; margin:8px 0; font-size:14px; }
+.chk input { width:20px; height:20px; accent-color:#d4af37; }
+
+/* ===== v3: خلفية، مجمّد، غير متوفر، مسابقات، فاتورة، واتساب ===== */
+.frozenbar { display:none; background:#5a1a14; color:#ffd0c8; text-align:center; padding:9px 12px; font-size:13px; border-bottom:1px solid #c0392b; position:relative; z-index:91; }
+body.hasbg { background-size:cover !important; background-position:center !important; background-attachment:fixed !important; background-repeat:no-repeat !important; }
+.unavail { opacity:.45; filter:grayscale(1); cursor:not-allowed !important; }
+.offtag { display:block; margin-top:5px; font-size:11px; color:#ff9c8f; font-weight:bold; }
+.oldp { color:#888; text-decoration:line-through; font-size:13px; margin-inline-start:6px; font-weight:normal; }
+.addon-card { position:relative; }
+.offbadge { position:absolute; top:8px; left:8px; background:#e74c3c; color:#fff; font-size:11px; font-weight:bold; border-radius:10px; padding:2px 8px; }
+.catnote { font-size:11px; margin-top:4px; line-height:1.5; color:var(--gold2); }
+.wafab { border:2px solid rgba(255,255,255,.35); padding:0; }
+.wafab svg { width:30px; height:30px; display:block; }
+.wafab.show::before { content:''; position:absolute; inset:-2px; border-radius:50%; border:2px solid #25d366; animation:pulse 2s ease-out infinite; pointer-events:none; }
+@keyframes pulse { from { transform:scale(1); opacity:.9; } to { transform:scale(1.6); opacity:0; } }
+.cst h4 { font-size:16px; }
+.inv { background:#0a0a0a; border:1px solid var(--gold); border-radius:16px; padding:14px 16px; }
+.inv .invh { text-align:center; color:var(--gold); font-size:24px; font-weight:bold; margin-bottom:6px; }
+.inv .r2 { display:flex; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px dashed #333; font-size:14px; }
+.inv .r2 span { color:#999; } .inv .r2 b { color:#fff; text-align:left; word-break:break-all; }
+.wide-modal { max-width:640px !important; }
+.sidehead { color:#888; font-size:12px; margin:14px 4px 6px; }
+.sec-card{text-align:center;cursor:pointer}
+.sec-card img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:18px;border:1px solid rgba(212,175,55,.45);box-shadow:0 6px 18px rgba(0,0,0,.5);display:block;transition:transform .15s}
+.sec-card:active img{transform:scale(.96)}
+.sec-card .title{padding:8px 2px 0;font-size:13px;font-weight:600;color:#fff}
+</style>
+</head>
+<body>
+
+<div class="header" id="mainHeader" style="display:none;">
+  <div class="logo">⚡ ZOON</div>
+  <div class="hdr-end">
+    <button class="balance-pill" data-act="nav" data-id="wallet"><span class="plus">+</span><span id="headerBalance">$0.00</span></button>
+    <button class="menu-btn" data-act="menu" data-id="1">☰</button>
+  </div>
+</div>
+
+<div class="frozenbar" id="frozenBar">⛔ حسابك مجمّد حالياً. تواصل مع الإدارة.</div>
+<div class="ticker" id="ticker"></div>
+<div class="overlay" id="overlay" data-act="menu" data-id="0"></div>
+<div class="sidebar" id="sidebar">
+  <button class="close" data-act="menu" data-id="0">✕</button>
+  <div class="logo">ZOON ⚡</div>
+  <button class="nav" data-act="nav" data-id="home">🏠 الرئيسية</button>
+  <button class="nav" data-act="nav" data-id="orders">📦 طلباتي</button>
+  <button class="nav" data-act="nav" data-id="wallet">💰 رصيدي</button>
+  <button class="nav" data-act="nav" data-id="spent">📊 وين صرفت رصيدي</button>
+  <button class="nav" data-act="nav" data-id="rates" style="color:var(--gold2);">💱 أسعار الصرف (<span id="curLabel">USD</span>)</button>
+  <button class="nav" data-act="nav" data-id="offers">🎁 العروض</button>
+  <button class="nav" data-act="nav" data-id="contests" style="color:var(--gold2);">🏆 المسابقات والسحوبات</button>
+  <div class="sidehead">تواصل معنا</div>
+  <div id="sideSocials"></div>
+  <button class="nav" data-act="logout" style="color:#e74c3c;">🚪 تسجيل خروج</button>
+</div>
+
+<div class="container">
+  <!-- دخول -->
+  <div class="page active" id="page-login">
+    <div class="hero"><h1>ZOON ⚡ متجر</h1><p>اشحن لعبتك المفضلة بثواني</p></div>
+    <div class="warn" id="fbWarn"></div>
+    <div class="form-box">
+      <h2>تسجيل الدخول</h2>
+      <div class="form-group"><label>الايميل</label><input type="email" id="loginEmail" placeholder="ايميلك" autocomplete="username"></div>
+      <div class="form-group"><label>كلمة السر</label><input type="password" id="loginPass" placeholder="كلمة السر" autocomplete="current-password"></div>
+      <button class="btn" data-act="login">دخول</button>
+      <div class="switch-link">ما عندك حساب؟ <a href="#" data-act="showpage" data-id="register">سجل جديد</a></div>
+    </div>
+  </div>
+
+  <!-- تسجيل -->
+  <div class="page" id="page-register">
+    <div class="hero"><h1>ZOON ⚡ متجر</h1><p>سجّل حسابك واشحن لعبتك بثواني</p></div>
+    <div class="form-box">
+      <h2>حساب جديد</h2>
+      <div class="form-group"><label>الاسم</label><input type="text" id="regName" placeholder="اسمك" maxlength="60"></div>
+      <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="regPhone" placeholder="رقم واتساب"></div>
+      <div class="form-group"><label>الايميل</label><input type="email" id="regEmail" placeholder="ايميلك" autocomplete="username"></div>
+      <div class="form-group"><label>كلمة السر</label><input type="password" id="regPass" placeholder="كلمة السر (6 أحرف)" autocomplete="new-password"></div>
+      <button class="btn" data-act="register">تسجيل</button>
+      <div class="switch-link">عندك حساب؟ <a href="#" data-act="showpage" data-id="login">دخول</a></div>
+    </div>
+  </div>
+
+  <!-- الرئيسية -->
+  <div class="page" id="page-home">
+    <div class="searchbar"><span>🔍</span><input type="text" id="gameSearch" placeholder="ابحث عن لعبة..." autocomplete="off"></div>
+    <h2 class="section-title" id="homeTitle" style="margin-top:4px;">🎮 الألعاب</h2>
+    <div class="grid g3" id="gamesGrid"></div>
+
+  </div>
+
+  <!-- لعبة -->
+  <div class="page" id="page-game">
+    <button class="btn btn-outline btn-sm" style="margin-bottom:15px;" data-act="gameback">→ رجوع</button>
+    <div class="hero" id="gameHero" style="padding:0; overflow:hidden;"></div>
+    <h2 class="section-title" id="gameName"></h2>
+    <div class="srv" id="serverChips"></div>
+    <h3 class="section-title" style="font-size:16px;">الأقسام</h3>
+    <div class="grid g3" id="categoriesGrid"></div>
+    <div id="addonsContainer" style="margin-top:20px;"></div>
+  </div>
+
+  <div class="page" id="page-orders"><h2 class="section-title">📦 طلباتي</h2><div id="ordersList"></div></div>
+
+  <div class="page" id="page-wallet">
+    <h2 class="section-title">💰 رصيدي</h2>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="offer-card" style="text-align:center;"><div class="small">عبيت</div><div class="price" id="walletIn">$0.00</div></div>
+      <div class="offer-card" style="text-align:center;"><div class="small">صرفت</div><div class="price" id="walletOut">$0.00</div></div>
+      <div class="offer-card" style="text-align:center; border-color:var(--gold);"><div class="small">الرصيد</div><div class="price" id="walletBal">$0.00</div></div>
+    </div>
+    <div class="form-box wide" style="margin:16px 0 0;">
+      <h2 style="font-size:16px;">🎫 تفعيل كود شحن</h2>
+      <div class="row"><input type="text" class="inp" id="redeemCode" placeholder="اكتب الكود" style="direction:ltr;text-align:center;" autocomplete="off"><button class="btn btn-sm" data-act="redeem">تفعيل</button></div>
+    </div>
+    <h3 class="section-title" style="font-size:16px;">➕ تعبئة الرصيد</h3>
+    <div class="small" style="margin-bottom:10px;">اختر طريقة الدفع، حوّل المبلغ، وبعدها اكتب رقم العملية ليتأكد الأدمن ويضيف الرصيد.</div>
+    <div class="grid g3" id="payMethods"></div>
+    <h3 class="section-title" style="font-size:16px;">🧾 طلبات التعبئة</h3>
+    <div id="depList"></div>
+  </div>
+
+  <div class="page" id="page-spent"><h2 class="section-title">📊 وين صرفت رصيدي</h2><div id="spentList"></div></div>
+
+  <!-- أسعار الصرف -->
+  <div class="page" id="page-rates">
+    <h2 class="section-title">💱 أسعار الصرف</h2>
+    <div class="form-box wide" style="margin-top:0;">
+      <h2 style="font-size:16px;">🔄 محوّل العملات</h2>
+      <div class="form-group"><input type="number" id="cvAmount" value="1" min="0" step="any"></div>
+      <div class="row">
+        <select class="inp" id="cvFrom"></select>
+        <button class="btn btn-outline btn-sm" data-act="cvswap">⇄</button>
+        <select class="inp" id="cvTo"></select>
+      </div>
+      <div class="cv-result" id="cvResult">—</div>
+    </div>
+    <div class="meta" id="ratesMeta"></div>
+    <div class="tbl-wrap" id="ratesTable"></div>
+  </div>
+
+  <div class="page" id="page-offers">
+    <h2 class="section-title">🎁 العروض</h2>
+    <div class="offer-card" style="border-color:var(--gold);">
+      <div style="font-size:40px; text-align:center;">💎</div>
+      <div class="name" style="text-align:center;">عرض الشحن</div>
+      <div style="text-align:center; color:#ccc;">اشحن 10$ واحصل على <b style="color:var(--gold);">0.50$</b> هدية</div>
+      <button class="btn" data-act="reqbal">اطلب شحن هلا</button>
+    </div>
+  </div>
+
+  <div class="page" id="page-contests">
+    <h2 class="section-title">🏆 المسابقات والسحوبات</h2>
+    <div id="contestsList"></div>
+  </div>
+
+  <!-- دخول الإدارة (مخفي) -->
+  <div class="page" id="page-adminlogin">
+    <div class="form-box">
+      <h2>🔐 دخول الإدارة</h2>
+      <div class="form-group"><label>الايميل</label><input type="email" id="admEmail" autocomplete="username"></div>
+      <div class="form-group"><label>كلمة السر</label><input type="password" id="admPass" autocomplete="current-password"></div>
+      <button class="btn" data-act="admlogin">دخول</button>
+      <button class="btn btn-outline" style="margin-top:8px;" data-act="admexit">رجوع للمتجر</button>
+    </div>
+  </div>
+
+  <!-- لوحة الأدمن -->
+  <div class="page" id="page-admin">
+    <div class="row" style="margin-bottom:8px;"><h2 class="section-title" style="margin:0;">🛠️ لوحة الأدمن</h2><button class="btn btn-outline btn-sm" data-act="admexit">↩ المتجر</button></div>
+    <div class="tabs" id="adminTabs"></div>
+    <div id="adminBody"></div>
+  </div>
+</div>
+
+<div class="bottom-nav" id="bottomNav" style="display:none;">
+  <button data-act="nav" data-id="home" data-nav="home"><span>🏠</span><span>الرئيسية</span></button>
+  <button data-act="nav" data-id="wallet" data-nav="wallet"><span>💵</span><span>إضافة رصيد</span></button>
+  <button data-act="nav" data-id="orders" data-nav="orders"><span>📦</span><span>طلباتي</span></button>
+  <button data-act="nav" data-id="rates" data-nav="rates"><span>💱</span><span>الصرف</span></button>
+</div>
+
+<button class="wafab" id="waFab" data-act="social" data-id="whatsapp" aria-label="تواصل عبر واتساب"><svg viewBox="0 0 32 32" fill="#fff" aria-hidden="true"><path d="M16 3C9 3 3.4 8.5 3.4 15.4c0 2.4.7 4.6 1.9 6.5L3.5 28.5l6.8-1.8c1.8 1 3.8 1.5 5.7 1.5 7 0 12.6-5.5 12.6-12.4S23 3 16 3zm0 22.4c-1.8 0-3.5-.5-5-1.4l-.4-.2-4 1 1.1-3.9-.3-.4a10 10 0 0 1-1.5-5.3C5.9 9.8 10.4 5.4 16 5.4s10.1 4.4 10.1 10-4.5 10-10.1 10zm5.6-7.4c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.2 8.2 0 0 1-4-3.5c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7c0 1.6 1.2 3.2 1.3 3.4s2.3 3.6 5.700 5c2.100.9 2.900 1 3.900.8.600-.1 1.800-.7 2.100-1.500s.3-1.400.2-1.500-.3-.2-.6-.4z"/></svg></button>
+<div id="toast" class="toast"></div>
+<div id="modalBox" class="modal"></div>
+
+<!-- مكتبات Firebase (نسخة compat: سكربتات عادية، فلو انحجبت ما بتخرب باقي الصفحة) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= إعدادات ================= */
+// ملاحظة: هي المفاتيح معرّفات عامة بـ Firebase وليست أسرار. الحماية الحقيقية بقواعد Firestore.
+var FIREBASE_CONFIG = {
+  apiKey: "AIzaSyADOVTLfRgjnW8q24AkngpdcDIWR6z5BiE",
+  authDomain: "zoon-store.firebaseapp.com",
+  projectId: "zoon-store",
+  storageBucket: "zoon-store.firebasestorage.app",
+  messagingSenderId: "932699635612",
+  appId: "1:932699635612:web:14d4e4e421ed3ea9ab1259"
+};
+var ADMIN_WA = '963985122937';      // رقم واتساب المتجر (للتواصل مع الزباين، مو بيانات دخول)
+var ADMIN_HASH = '#panel-zoon';     // الرابط المخفي لدخول الإدارة
+var CKEY = 'zoon_cur_v3', LKEY = 'zoon_last_order_v3';
+
+// [الاسم، العلم، عدد الخانات العشرية، الرمز]
+var CUR = {
+  USD:['دولار أمريكي','🇺🇸',2,'$'],
+  SYP:['ليرة سورية','🇸🇾',0,'ل.س'],
+  TRY:['ليرة تركية','🇹🇷',2,'₺']
+};
+var DEF_RATES = { USD:1, SYP:14000, TRY:42 };
+
+/* ================= أدوات ================= */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function safeUrl(u){ u = String(u || ''); return (/^https?:\/\//i.test(u) || /^data:image\//i.test(u)) ? u : ''; }
+function randCode(len){
+  var ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = '', i;
+  var arr = (window.crypto && window.crypto.getRandomValues) ? window.crypto.getRandomValues(new Uint8Array(len)) : null;
+  for(i = 0; i < len; i++) s += ch[(arr ? arr[i] : Math.floor(Math.random() * 256)) % ch.length];
+  return s;
+}
+function placeholderImg(text, c1, c2){
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><text x="50%" y="52%" fill="#fff" font-size="30" font-weight="bold" text-anchor="middle" dominant-baseline="middle" font-family="Tahoma, Arial">' + esc(text) + '</text></svg>';
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+var FALLBACK_IMG = placeholderImg('ZOON ⚡', '#1c1c1c', '#3a2f0b');
+function ms(ts){ return ts && ts.toMillis ? ts.toMillis() : (Number(ts) || 0); }
+function fmtDate(ts){ var m = ms(ts); return m ? new Date(m).toLocaleDateString('ar') : '-'; }
+function numf(v, d){ return Number(v).toLocaleString('en', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+function toCents(v){ var n = parseFloat(v); return isFinite(n) ? Math.round(n * 100) : NaN; }
+function usd(c){ return '$' + numf(Number(c || 0) / 100, 2); }   // كل المبالغ مخزّنة بالسنت (أعداد صحيحة)
+function toObj(d){ var o = d.data({ serverTimestamps: 'estimate' }); o.id = d.id; return o; }
+function byId(arr, id){ for(var i = 0; i < arr.length; i++) if(arr[i].id === id) return arr[i]; return null; }
+function fmtDT(ts){ var m = ms(ts); return m ? new Date(m).toLocaleString('ar') : '-'; }
+function curTxt(v, c){ var i = CUR[c] || CUR.USD, t = numf(v, i[2]); return (c === 'USD' || !CUR[c]) ? '$' + t : t + ' ' + i[3]; }
+function colorOk(c){ return /^#[0-9a-fA-F]{6}$/.test(String(c || '')); }
+function noteHtml(t, c){
+  t = String(t || '').trim(); if(!t) return '';
+  return '<div class="pnote"' + (colorOk(c) ? ' style="color:' + c + ';border-color:' + c + ';"' : '') + '>📌 ' + esc(t) + '</div>';
+}
+function newOrderNo(){ return 'Z' + Date.now().toString(36).toUpperCase() + randCode(3); }
+function copyQuiet(t){ try { var r = navigator.clipboard.writeText(t); if(r && r.catch) r.catch(function(){}); } catch(e){} }
+
+/* ================= Firebase ================= */
+var auth = null, db = null, FV = null, FB_ERR = '';
+try {
+  if(typeof firebase === 'undefined') throw new Error('lib');
+  firebase.initializeApp(FIREBASE_CONFIG);
+  auth = firebase.auth(); db = firebase.firestore(); FV = firebase.firestore.FieldValue;
+} catch(e){
+  FB_ERR = (e && e.message === 'lib') ? 'تعذر تحميل مكتبة Firebase. تأكد من الانترنت أو جرّب VPN (ممكن تكون محجوبة ببلدك).' : 'خطأ بتهيئة Firebase: ' + (e && e.message);
+}
+function needFb(){ if(auth && db) return false; toast('❌ ' + FB_ERR, 7000); return true; }
+function authMsg(e){
+  var m = {
+    'auth/invalid-credential': 'ايميل أو كلمة سر غلط، أو ما عندك حساب (سجّل أول)',
+    'auth/invalid-login-credentials': 'ايميل أو كلمة سر غلط، أو ما عندك حساب (سجّل أول)',
+    'auth/user-not-found': 'ما في حساب بهاد الايميل، سجّل أول',
+    'auth/wrong-password': 'كلمة السر غلط',
+    'auth/invalid-email': 'صيغة الايميل غلط',
+    'auth/email-already-in-use': 'الايميل مستخدم',
+    'auth/weak-password': 'كلمة السر ضعيفة (6 أحرف عالأقل)',
+    'auth/operation-not-allowed': 'فعّل Email/Password من Firebase ← Authentication ← Sign-in method',
+    'auth/unauthorized-domain': 'أضف هاد النطاق بـ Firebase ← Authentication ← Settings ← Authorized domains',
+    'auth/network-request-failed': 'مشكلة اتصال بالانترنت',
+    'auth/too-many-requests': 'محاولات كتير، انتظر شوي',
+    'auth/operation-not-supported-in-this-environment': 'افتح الصفحة من localhost أو من استضافة، مو بالضغط المزدوج على الملف',
+    'permission-denied': 'ما في صلاحية (راجع قواعد Firestore)'
+  };
+  return '❌ ' + (m[e && e.code] || ((e && (e.code || e.message)) || 'خطأ'));
+}
+
+/* ================= الحالة ================= */
+var ME = null, isAdmin = false, unsubUser = null, registering = false, wantAdmin = false;
+var D = { users: [], orders: [], codes: [], games: [], categories: [], addons: [], methods: [], deposits: [], contests: [], sections: [] };
+var SITE = {}, IMGS = {}, curServer = '';
+function isOn(x){ return !x || x.active !== false; }
+var RATES = JSON.parse(JSON.stringify(DEF_RATES)), RATES_UPDATED = 0;
+var CURSEL = 'USD'; try { var cs = localStorage.getItem(CKEY); if(cs && CUR[cs]) CURSEL = cs; } catch(e){}
+var currentPage = 'login', currentCat = null, currentGameName = '', adminTab = 'dashboard';
+
+function rate(c){ var r = Number(RATES[c]); return r > 0 ? r : (DEF_RATES[c] || 1); }
+function fmt(cents){
+  var info = CUR[CURSEL], v = Number(cents || 0) / 100 * rate(CURSEL), s = numf(v, info[2]);
+  return CURSEL === 'USD' ? '$' + s : s + ' ' + info[3];
+}
+
+/* ================= واجهة عامة ================= */
+function toast(msg, dur){
+  var t = $('toast'); t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._tm); t._tm = setTimeout(function(){ t.style.display = 'none'; }, dur || 2800);
+}
+function toggleMenu(open){ $('sidebar').classList.toggle('open', open); $('overlay').classList.toggle('show', open); }
+function showPage(p){
+  currentPage = p;
+  document.body.classList.toggle('adm', p === 'admin' || p === 'adminlogin');
+  document.querySelectorAll('.page').forEach(function(el){ el.classList.remove('active'); });
+  var el = $('page-' + p); if(el) el.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function openModal(html){ $('modalBox').innerHTML = html; $('modalBox').classList.add('show'); }
+function closeModal(){ $('modalBox').classList.remove('show'); $('modalBox').classList.remove('sheetmode'); $('modalBox').dataset.pop = ''; }
+function frozenGuard(){ if(ME && ME.frozen){ toast('⛔ حسابك مجمّد، تواصل مع الإدارة', 5000); return true; } return false; }
+function updateHeader(){
+  $('mainHeader').style.display = ME ? 'flex' : 'none';
+  $('bottomNav').style.display = ME ? 'flex' : 'none';
+  if(ME) $('headerBalance').textContent = fmt(ME.balance);
+  $('curLabel').textContent = CURSEL;
+  $('frozenBar').style.display = (ME && ME.frozen) ? 'block' : 'none';
+  toggleSiteUi();
+}
+function rerender(){
+  var p = currentPage;
+  if(p === 'home') renderGames();
+  else if(p === 'orders') renderOrders();
+  else if(p === 'wallet') renderWallet();
+  else if(p === 'spent') renderSpent();
+  else if(p === 'contests') renderContests();
+  else if(p === 'rates') renderRates();
+  else if(p === 'admin') renderAdmin();
+  else if(p === 'game' && currentCat) loadAddons(currentCat);
+}
+function nav(p){
+  toggleMenu(false); closeModal();
+  if(p === 'home') currentSection = null;
+  if(!ME && p !== 'login' && p !== 'register'){ showPage('login'); return; }
+  if(p === 'admin'){ openAdminGate(); return; }
+  document.querySelectorAll('.bottom-nav button').forEach(function(b){ b.classList.toggle('active', b.dataset.nav === p); });
+  showPage(p);
+  rerender();
+  if(p !== 'login' && p !== 'register') pushView();
+}
+
+/* ================= الحسابات ================= */
+function loadCatalog(){
+  return Promise.all([
+    db.collection('games').get(), db.collection('categories').get(), db.collection('addons').get(),
+    db.collection('settings').doc('rates').get(), db.collection('payMethods').get(), db.collection('settings').doc('site').get(),
+    db.collection('sections').get().catch(function(){ return { docs: [] }; })
+  ]).then(function(r){
+    D.games = r[0].docs.map(toObj); D.categories = r[1].docs.map(toObj); D.addons = r[2].docs.map(toObj);
+    var s = r[3].exists ? r[3].data() : null;
+    if(s && s.rates){ RATES = Object.assign({}, DEF_RATES, s.rates); RATES_UPDATED = ms(s.updatedAt); }
+    D.methods = r[4].docs.map(toObj);
+    D.sections = r[6].docs.map(toObj).sort(function(a, b){ return (Number(a.order) || 0) - (Number(b.order) || 0); });
+    SITE = r[5].exists ? r[5].data() : {};
+    applySite();
+  });
+}
+function afterLogin(){
+  updateHeader();
+  loadCatalog().catch(function(e){ console.error(e); toast('تعذر تحميل البيانات (راجع قواعد Firestore)', 5000); }).then(function(){
+    var wantsPanel = wantAdmin || location.hash === ADMIN_HASH;
+    wantAdmin = false;
+    if(wantsPanel){
+      if(isAdmin){ openAdmin(); return; }
+      toast('⛔ هاد الحساب ما عنده صلاحية إدارة', 4000);
+    }
+    var popHtml = ($('modalBox').dataset.pop === '1' && $('modalBox').classList.contains('show')) ? $('modalBox').innerHTML : null;
+    nav('home');
+    if(popHtml){ openModal(popHtml); $('modalBox').dataset.pop = '1'; } else maybePopup();
+  });
+}
+function healUser(user){
+  // حساب موجود بـ Auth بس ما إله ملف بـ Firestore (مثلاً انقطع التسجيل): منعمل له ملف فاضي
+  db.collection('users').doc(user.uid).set({
+    name: String(user.email || 'user').split('@')[0].slice(0, 60), phone: '', email: user.email || '',
+    balance: 0, totalIn: 0, totalOut: 0, createdAt: FV.serverTimestamp()
+  }).catch(function(e){ console.error(e); toast(authMsg(e), 6000); });
+}
+function listenUser(user){
+  var first = true;
+  unsubUser = db.collection('users').doc(user.uid).onSnapshot(function(d){
+    if(!d.exists){ if(!registering) healUser(user); return; }
+    ME = d.data({ serverTimestamps: 'estimate' }); ME.uid = user.uid;
+    updateHeader();
+    if(first){ first = false; afterLogin(); }
+    else if(currentPage === 'wallet') renderWallet();
+  }, function(err){ console.error(err); toast('❌ تعذر قراءة بيانات الحساب (راجع قواعد Firestore)', 5000); });
+}
+if(auth){
+  auth.onAuthStateChanged(function(user){
+    if(unsubUser){ unsubUser(); unsubUser = null; }
+    stopOrderWatch();
+    ME = null; isAdmin = false;
+    if(!user){ updateHeader(); showPage(location.hash === ADMIN_HASH ? 'adminlogin' : 'login'); return; }
+    db.collection('admins').doc(user.uid).get().then(function(d){ isAdmin = d.exists; }, function(){ isAdmin = false; })
+      .then(function(){ listenUser(user); startOrderWatch(); });
+  });
+}
+
+function register(){
+  if(needFb()) return;
+  var name = $('regName').value.trim();
+  var phone = $('regPhone').value.replace(/[^0-9]/g, '');
+  var email = $('regEmail').value.trim();
+  var pass = $('regPass').value;
+  if(!name || !phone || !email || !pass) return toast('عبّي كل الحقول');
+  if(pass.length < 6) return toast('كلمة السر 6 أحرف عالاقل');
+  registering = true;
+  auth.createUserWithEmailAndPassword(email, pass).then(function(cred){
+    return db.collection('users').doc(cred.user.uid).set({
+      name: name, phone: phone, email: email,
+      balance: 0, totalIn: 0, totalOut: 0, createdAt: FV.serverTimestamp()
+    });
+  }).then(function(){ registering = false; toast('✅ تم التسجيل!'); })
+    .catch(function(e){ registering = false; console.error(e); toast(authMsg(e), 6000); });
+}
+function login(){
+  if(needFb()) return;
+  var email = $('loginEmail').value.trim(), pass = $('loginPass').value;
+  if(!email || !pass) return toast('عبّي الحقول');
+  auth.signInWithEmailAndPassword(email, pass).then(function(){ $('loginPass').value = ''; })
+    .catch(function(e){ console.error(e); toast(authMsg(e), 6000); });
+}
+function logout(){
+  toggleMenu(false);
+  if(!auth) return;
+  auth.signOut().then(function(){ try { history.replaceState(null, '', location.pathname + location.search); } catch(e){} toast('تم تسجيل الخروج'); });
+}
+
+/* ================= الرصيد والأكواد ================= */
+function redeem(){
+  if(!ME || needFb() || frozenGuard()) return;
+  var code = $('redeemCode').value.trim().toUpperCase();
+  if(!code) return toast('ادخل الكود');
+  if(!/^[A-Z0-9-]{4,30}$/.test(code)) return toast('❌ الكود غير صحيح');
+  var cRef = db.collection('codes').doc(code), uRef = db.collection('users').doc(ME.uid);
+  db.runTransaction(function(t){
+    return Promise.all([t.get(cRef), t.get(uRef)]).then(function(r){
+      if(!r[0].exists) throw new Error('الكود غير موجود');
+      var c = r[0].data(), u = r[1].data(), v = Number(c.value);
+      if(u.frozen) throw new Error('حسابك مجمّد');
+      if(c.phone && c.phone !== u.phone) throw new Error('هاد الكود مو الك');
+      if(c.used) throw new Error('هاد الكود انحرق من قبل');
+      if(!(v > 0)) throw new Error('قيمة الكود غير صحيحة');
+      t.update(cRef, { used: true, usedBy: ME.uid, usedAt: FV.serverTimestamp() });
+      t.update(uRef, { balance: u.balance + v, totalIn: u.totalIn + v, lastCodeId: code });
+      return v;
+    });
+  }).then(function(v){ toast('✅ تم تفعيل الكود: +' + fmt(v)); $('redeemCode').value = ''; })
+    .catch(function(e){ console.error(e); toast(e.code === 'permission-denied' ? '❌ الكود غير صالح أو مو الك' : '❌ ' + (e.message || e.code)); });
+}
+function reqBal(){
+  if(!ME) return;
+  var msg = 'مرحبا، أنا ' + ME.name + '\nرقمي: ' + ME.phone + '\nالايميل: ' + ME.email + '\nبدي أضيف رصيد لحسابي بمتجر ZOON (دفع كاش).';
+  window.open('https://wa.me/' + waNum() + '?text=' + encodeURIComponent(msg), '_blank');
+}
+
+/* ================= الألعاب والطلبات ================= */
+function gameCardHtml(g){
+  var on = isOn(g);
+  return '<div class="game-card' + (on ? '' : ' unavail') + '"' + (on ? ' data-act="game" data-id="' + esc(g.id) + '"' : '') + '><img src="' + esc(safeUrl(g.img) || FALLBACK_IMG) + '" alt=""><div class="title">' + esc(g.name) + '</div>' + (on ? '' : '<span class="offtag">ليس متوفر حالياً</span>') + '</div>';
+}
+var currentSection = null;
+/* ===== زر الرجوع (جوال/متصفح): بيرجع درجة درجة داخل الموقع وما بيطلّع الزبون برّا ===== */
+var histReady = false, restoring = false, exitArmed = false, exitTimer = null;
+function curView(){ return { p: currentPage, s: currentSection || null, g: currentPage === 'game' ? (currentGameId || '') : '', c: currentPage === 'game' ? (currentCat || '') : '' }; }
+function pushView(){
+  if(restoring || !histReady) return;
+  try{
+    var v = curView(), st = history.state;
+    if(st && st.z === 'app' && JSON.stringify(st.v) === JSON.stringify(v)) return;
+    var fromLogin = st && st.z === 'app' && st.v && (st.v.p === 'login' || st.v.p === 'register');
+    if(fromLogin) history.replaceState({ z: 'app', v: v }, ''); else history.pushState({ z: 'app', v: v }, '');
+  }catch(e){}
+}
+function goBack(){
+  if(histReady && history.state && history.state.z === 'app'){ history.back(); return true; }
+  return false;
+}
+function applyView(v){
+  restoring = true;
+  try{
+    closeModal();
+    if(!ME){ showPage('login'); return; }
+    if(v.p === 'game' && v.g && byId(D.games, v.g)){
+      currentSection = v.s || null;
+      openGame(v.g);
+      if(v.c) loadAddons(v.c);
+      document.querySelectorAll('.bottom-nav button').forEach(function(b){ b.classList.toggle('active', b.dataset.nav === 'home'); });
+    } else {
+      var pg = v.p || 'home';
+      if(pg === 'admin' || pg === 'adminlogin' || pg === 'login' || pg === 'register' || pg === 'game') pg = 'home';
+      nav(pg);
+      if(pg === 'home'){ currentSection = v.s || null; renderGames(); }
+    }
+  } finally { restoring = false; }
+}
+window.addEventListener('popstate', function(e){
+  var st = e.state;
+  if(st && st.z === 'app'){ applyView(st.v || { p: 'home' }); return; }
+  // وصلنا لأول نقطة: ما نطلّع الزبون بالغلط، بدنا ضغطتين رجوع
+  if(exitArmed){ exitArmed = false; clearTimeout(exitTimer); history.back(); return; }
+  exitArmed = true; clearTimeout(exitTimer); exitTimer = setTimeout(function(){ exitArmed = false; }, 2000);
+  toast('اضغط رجوع مرة ثانية للخروج من الموقع', 2000);
+  try{ history.pushState({ z: 'app', v: curView() }, ''); }catch(x){}
+});
+function secCardHtml(id, name, img){
+  return '<div class="sec-card" data-act="section" data-id="' + esc(id) + '"><img src="' + esc(safeUrl(img) || placeholderImg(name, '#b8860b', '#1a1a1a')) + '" alt=""><div class="title">' + esc(name) + '</div></div>';
+}
+function renderGames(){
+  var grid = $('gamesGrid'), ttl = $('homeTitle');
+  var all = D.games;
+  var secs = (D.sections || []).filter(isOn);
+  var secIds = {}; secs.forEach(function(x){ secIds[x.id] = 1; });
+  var q = ($('gameSearch').value || '').trim().toLowerCase();
+  if(ttl) ttl.textContent = secs.length ? '📚 الأقسام' : '🎮 الألعاب';
+  if(!all.length){ grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">لا توجد ألعاب حالياً</div>'; return; }
+  // بدون مصنّفات: العرض القديم
+  if(!secs.length){
+    var a0 = all.filter(function(g){ return !q || String(g.name || '').toLowerCase().indexOf(q) !== -1; });
+    grid.innerHTML = a0.length ? a0.map(gameCardHtml).join('') : '<div class="empty" style="grid-column:1/-1;">ما في نتائج</div>';
+    return;
+  }
+  // بحث: نتائج الألعاب من كل المصنّفات
+  if(q){
+    var r = all.filter(function(g){ return String(g.name || '').toLowerCase().indexOf(q) !== -1; });
+    if(ttl) ttl.textContent = '🔎 نتائج البحث';
+    grid.innerHTML = r.length ? r.map(gameCardHtml).join('') : '<div class="empty" style="grid-column:1/-1;">ما في نتائج</div>';
+    return;
+  }
+  var rest = all.filter(function(g){ return !secIds[g.section]; });
+  // داخل مصنّف: ألعابه
+  if(currentSection){
+    var sc = byId(D.sections, currentSection);
+    var gs = currentSection === '__other' ? rest : all.filter(function(g){ return g.section === currentSection; });
+    if(ttl) ttl.textContent = currentSection === '__other' ? 'أخرى' : (sc ? sc.name : '');
+    grid.innerHTML = '<div style="grid-column:1/-1;"><button class="btn btn-outline btn-sm" data-act="secback">→ رجوع للأقسام</button></div>' +
+      (gs.length ? gs.map(gameCardHtml).join('') : '<div class="empty" style="grid-column:1/-1;">ما في ألعاب بهاد القسم حالياً</div>');
+    return;
+  }
+  // الرئيسية: بطاقات المصنّفات
+  grid.innerHTML = secs.map(function(x){ return secCardHtml(x.id, x.name, x.img); }).join('') + (rest.length ? secCardHtml('__other', 'أخرى', '') : '');
+}
+var currentGameId = '';
+function openGame(id){
+  var g = byId(D.games, id); if(!g || !isOn(g)) return;
+  currentGameName = g.name; currentCat = null; currentGameId = id;
+  var sv = Array.isArray(g.servers) ? g.servers : [];
+  curServer = sv[0] || '';
+  $('gameName').textContent = g.name;
+  $('gameHero').innerHTML = '<img src="' + esc(safeUrl(g.img) || FALLBACK_IMG) + '" alt="" style="width:100%;height:180px;object-fit:cover;display:block;">';
+  var cats = D.categories.filter(function(c){ return c.game === id; });
+  $('categoriesGrid').innerHTML = cats.map(function(c){
+    var on = isOn(c);
+    return '<div class="cat-card' + (on ? '' : ' unavail') + '"' + (on ? ' data-act="cat" data-id="' + esc(c.id) + '"' : '') + '><div class="circ">' + (safeUrl(c.img) ? '<img src="' + esc(safeUrl(c.img)) + '" alt="">' : esc(String(c.name || '?').trim().charAt(0))) + '</div><div class="name">' + esc(c.name) + '</div>' +
+      (on ? (c.note ? '<div class="catnote"' + (colorOk(c.noteColor) ? ' style="color:' + c.noteColor + ';"' : '') + '>' + esc(c.note) + '</div>' : '') : '<span class="offtag">ليس متوفر حالياً</span>') + '</div>';
+  }).join('') || '<div class="empty">لا توجد أقسام</div>';
+  $('addonsContainer').innerHTML = '';
+  drawServers();
+  showPage('game');
+  var onCats = cats.filter(isOn);
+  if(onCats.length === 1) loadAddons(onCats[0].id);
+  pushView();
+}
+function drawServers(){
+  var g = byId(D.games, currentGameId), sv = g && Array.isArray(g.servers) ? g.servers : [];
+  $('serverChips').innerHTML = sv.length ? '<div class="small" style="width:100%;">🌐 اختر السيرفر (الأسعار بتتغير حسب السيرفر):</div>' + sv.map(function(n){
+    return '<button class="chip' + (n === curServer ? ' on' : '') + '" data-act="server" data-id="' + esc(n) + '">' + esc(n) + '</button>';
+  }).join('') : '';
+}
+function loadAddons(catId){
+  var cat = byId(D.categories, catId); if(!cat || !isOn(cat)) return;
+  currentCat = catId;
+  var list = D.addons.filter(function(a){ return a.category === catId && (!a.server || !curServer || a.server === curServer); });
+  $('addonsContainer').innerHTML = '<h3 class="section-title" style="font-size:16px;">الباقات</h3>' + noteHtml(cat.note, cat.noteColor) + '<div class="grid g3">' +
+    (list.map(function(a){
+      var qty = a.kind === 'qty', on = isOn(a), off = !qty && Number(a.oldPrice) > Number(a.price);
+      return '<div class="addon-card' + (on ? '' : ' unavail') + '"' + (on ? ' data-act="buy" data-id="' + esc(a.id) + '"' : '') + '>' + (off && on ? '<span class="offbadge">🔥 عرض</span>' : '') + (safeUrl(a.img) ? '<img class="aimg" src="' + esc(safeUrl(a.img)) + '" alt="">' : '') +
+        '<div class="name">' + esc(a.name) + '</div>' +
+        '<div class="price">' + (qty ? 'كل ' + fmt(100) + ' = ' + esc(a.perUsd) + ' ' + esc(a.unit || 'وحدة') : fmt(a.price) + (off ? '<span class="oldp">' + fmt(a.oldPrice) + '</span>' : '')) + '</div>' +
+        (on ? '<div class="go">' + (qty ? 'اختر الكمية' : 'شراء') + '</div>' : '<span class="offtag">ليس متوفر حالياً</span>') + '</div>';
+    }).join('') || '<div class="empty">لا توجد باقات</div>') + '</div>';
+}
+var ID_TYPES = {
+  id:    { short: 'ID',     ph: 'ايدي الحساب (ID)',          mode: 'text', name: 'ايدي (ID)' },
+  phone: { short: 'هاتف',   ph: 'رقم الهاتف (مع رمز الدولة)', mode: 'tel',  name: 'رقم هاتف' },
+  user:  { short: 'يوزر',   ph: 'اسم المستخدم (يوزر)',        mode: 'text', name: 'يوزر' }
+};
+function idInfo(a){ return ID_TYPES[a && a.idType] || ID_TYPES.id; }
+function openOrderModal(addonId){
+  if(!ME || frozenGuard()) return;
+  var last = 0; try { last = parseInt(localStorage.getItem(LKEY) || '0', 10) || 0; } catch(e){}
+  var diff = Date.now() - last;
+  if(diff < 60000) return toast('⏳ لازم تنتظر ' + Math.ceil((60000 - diff) / 1000) + ' ثانية قبل طلب جديد');
+  var a = byId(D.addons, addonId); if(!a || !isOn(a)) return toast('هاد المنتج غير متوفر حالياً');
+  var ii = idInfo(a), qty = a.kind === 'qty';
+  openModal('<div class="sheet"><div class="sheet-head"><h3>' + esc(a.name) + (a.server ? ' <span class="tag">' + esc(a.server) + '</span>' : '') + '</h3><span class="pricepill" id="sheetPill">' + (qty ? '—' : fmt(a.price)) + '</span></div>' +
+    noteHtml(a.note, a.noteColor) +
+    (qty ? '<div class="small" style="margin-bottom:6px;">كل ' + fmt(100) + ' = ' + esc(a.perUsd) + ' ' + esc(a.unit || 'وحدة') + '</div><input type="number" inputmode="numeric" class="pin" id="qtyIn" data-addon="' + esc(addonId) + '" placeholder="اكتب الكمية (' + esc(a.min || 1) + ' - ' + esc(a.max || 1000000) + ' ' + esc(a.unit || 'وحدة') + ')">' : '') +
+    '<div class="fld"><small>الإجمالي</small><b id="sheetTotal">' + (qty ? '—' : fmt(a.price)) + '</b></div>' +
+    '<input type="' + (ii.mode === 'tel' ? 'tel' : 'text') + '" inputmode="' + ii.mode + '" class="pin" id="playerId" placeholder="' + esc(ii.ph) + '" maxlength="60" autocomplete="off">' +
+    '<div class="sheet-btns"><button class="btn" data-act="confirm" data-id="' + esc(addonId) + '">شراء</button>' +
+    '<button class="btn-cancel" data-act="closemodal">إلغاء</button></div></div>');
+  $('modalBox').classList.add('sheetmode');
+}
+// سعر الباقة بالعدّاد بالسنت (تقريب لفوق، بحساب أعداد صحيحة)
+function qtyPrice(a, q){
+  q = parseInt(q, 10);
+  var per = Number(a.perUsd) || 0, mn = Number(a.min) || 1, mx = Number(a.max) || 1000000;
+  if(!(per >= 1) || !(q >= mn) || !(q <= mx)) return NaN;
+  return Math.floor((q * 100 + per - 1) / per);
+}
+function updateQty(){
+  var el = $('qtyIn'); if(!el) return;
+  var a = byId(D.addons, el.dataset.addon), p = a ? qtyPrice(a, el.value) : NaN;
+  $('sheetTotal').textContent = isNaN(p) ? '—' : fmt(p);
+  $('sheetPill').textContent = isNaN(p) ? '—' : fmt(p);
+}
+var ordering = false;
+function placeOrder(addonId){
+  if(!ME || needFb() || ordering || frozenGuard()) return;
+  var pid = $('playerId').value.trim();
+  var a = byId(D.addons, addonId); if(!a || !isOn(a)) return toast('هاد المنتج غير متوفر حالياً');
+  var ii = idInfo(a);
+  var qv = null;
+  if(a.kind === 'qty'){
+    qv = parseInt($('qtyIn').value, 10);
+    if(isNaN(qtyPrice(a, qv))) return toast('اكتب كمية ضمن المسموح (' + (a.min || 1) + ' - ' + (a.max || 1000000) + ')');
+  }
+  if(ii.mode === 'tel'){ pid = pid.replace(/[^0-9+]/g, ''); if(pid.replace(/\D/g, '').length < 6) return toast('ادخل رقم هاتف صحيح'); }
+  if(!pid) return toast('ادخل ' + ii.short);
+  if(pid.length > 60) return toast('المعرّف طويل كتير');
+  var cat = byId(D.categories, a.category), game = cat ? byId(D.games, cat.game) : null;
+  var uRef = db.collection('users').doc(ME.uid), aRef = db.collection('addons').doc(addonId), oRef = db.collection('orders').doc(newOrderNo());
+  ordering = true;
+  db.runTransaction(function(t){
+    return Promise.all([t.get(uRef), t.get(aRef)]).then(function(r){
+      var u = r[0].data(), ad = r[1].exists ? r[1].data() : null;
+      if(!ad) throw new Error('الباقة غير موجودة');
+      if(ad.active === false) throw new Error('هاد المنتج موقوف حالياً');
+      if(u.frozen) throw new Error('حسابك مجمّد');
+      var price;
+      if(ad.kind === 'qty'){
+        if(qv === null) throw new Error('اكتب الكمية');
+        price = qtyPrice(ad, qv);
+        if(isNaN(price)) throw new Error('الكمية خارج المسموح');
+      } else price = Number(ad.price);
+      if(!(price > 0)) throw new Error('سعر غير صحيح');
+      if(Number(u.balance) < price) throw new Error('رصيدك ما بيكفي');
+      t.update(uRef, { balance: u.balance - price, totalOut: u.totalOut + price, lastOrderId: oRef.id });
+      var order = {
+        userId: ME.uid, userName: u.name, userPhone: u.phone, gameName: (game ? game.name : currentGameName) + (ad.server ? ' — ' + ad.server : ''),
+        addonId: addonId, addonName: ad.name, playerId: pid, price: price, status: 'pending', date: FV.serverTimestamp()
+      };
+      if(ad.kind === 'qty') order.qty = qv;
+      t.set(oRef, order);
+    });
+  }).then(function(){
+    ordering = false;
+    try { localStorage.setItem(LKEY, String(Date.now())); } catch(e){}
+    closeModal(); toast('✅ تم الطلب بنجاح، رقم طلبك: ' + oRef.id, 6000); notify('order', oRef.id);
+  }).catch(function(e){ ordering = false; console.error(e); toast(e.code === 'permission-denied' ? '❌ تعذر تنفيذ الطلب (راجع قواعد Firestore)' : '❌ ' + (e.message || e.code), 5000); });
+}
+function fetchMyOrders(){
+  return db.collection('orders').where('userId', '==', ME.uid).get().then(function(s){
+    return s.docs.map(toObj).sort(function(a, b){ return ms(b.date) - ms(a.date); });
+  });
+}
+var ST = { pending:'قيد الانتظار', approved:'تم الشحن', rejected:'مرفوض (انرجع الرصيد)' };
+var ORD_ICON = { pending:'⏳', approved:'✅', rejected:'❌' };
+var myOrders = [], ordFilter = 'all';
+function drawOrders(){
+  var box = $('ordersList');
+  var cnt = { all: myOrders.length, approved: 0, pending: 0, rejected: 0 }, total = 0;
+  myOrders.forEach(function(o){ var st = ST[o.status] ? o.status : 'pending'; cnt[st]++; if(st === 'approved') total += Number(o.price) || 0; });
+  var tabs = [['all', 'الكل'], ['approved', 'تم الشحن'], ['pending', 'انتظار'], ['rejected', 'مرفوض']];
+  var list = myOrders.filter(function(o){ return ordFilter === 'all' || (ST[o.status] ? o.status : 'pending') === ordFilter; });
+  box.innerHTML = '<div class="chips">' + tabs.map(function(t){
+      return '<button class="chip' + (ordFilter === t[0] ? ' on' : '') + '" data-act="ofilter" data-id="' + t[0] + '"><i>' + cnt[t[0]] + '</i>' + t[1] + '</button>';
+    }).join('') + '</div><div class="totalpill">إجمالي المشتريات: ' + fmt(total) + '</div>' +
+    (list.map(function(o){
+      var st = ST[o.status] ? o.status : 'pending';
+      return '<div class="ord"><div class="l">' + fmt(o.price) + '</div><div class="m"><div class="st ' + st + '">' + ORD_ICON[st] + ' ' + ST[st] + '</div>' + fmtDate(o.date) + '</div>' +
+        '<div class="r"><b>' + (o.qty ? esc(o.qty) + ' × ' : '') + esc(o.addonName) + '</b><span>' + esc(idInfo(byId(D.addons, o.addonId)).short) + ': ' + esc(o.playerId) + '</span>' +
+        (st === 'rejected' && o.reason ? '<div class="reason">السبب: ' + esc(o.reason) + '</div>' : '') +
+        '<div class="small" style="direction:ltr;text-align:right;">#' + esc(o.id) + '</div><button class="btn btn-outline btn-sm" style="margin-top:6px;" data-act="invoice" data-id="' + esc(o.id) + '">🧾 فاتورة</button></div></div>';
+    }).join('') || '<div class="empty">لا توجد طلبات</div>');
+}
+function renderOrders(){
+  var box = $('ordersList'); if(!ME) return;
+  box.innerHTML = '<div class="empty">⏳</div>';
+  fetchMyOrders().then(function(list){ myOrders = list; drawOrders(); })
+    .catch(function(e){ console.error(e); box.innerHTML = '<div class="empty">تعذر تحميل الطلبات</div>'; });
+}
+function renderWallet(){
+  if(!ME) return;
+  $('walletIn').textContent = fmt(ME.totalIn); $('walletOut').textContent = fmt(ME.totalOut); $('walletBal').textContent = fmt(ME.balance);
+  var list = D.methods.filter(isOn);
+  $('payMethods').innerHTML = list.map(function(m){
+    return '<div class="cat-card" data-act="paymethod" data-id="' + esc(m.id) + '"><div class="circ">' + (safeUrl(m.img) ? '<img src="' + esc(safeUrl(m.img)) + '" alt="">' : esc(String(m.name || '?').trim().charAt(0))) + '</div><div class="name">' + esc(m.name) + '</div></div>';
+  }).join('') || '<div class="empty" style="grid-column:1/-1;">ما في طرق دفع حالياً. تواصل معنا عالواتساب.<br><button class="btn btn-outline btn-sm" style="margin-top:10px;" data-act="reqbal">💬 واتساب</button></div>';
+  loadDeposits();
+}
+var myDeps = [], DST = { pending: 'قيد المراجعة', approved: 'تمت الإضافة', rejected: 'مرفوضة' };
+function loadDeposits(){
+  var box = $('depList'); if(!ME || !box) return;
+  db.collection('deposits').where('userId', '==', ME.uid).get().then(function(s){
+    myDeps = s.docs.map(toObj).sort(function(a, b){ return ms(b.date) - ms(a.date); });
+    drawDeposits();
+  }).catch(function(e){ console.error(e); box.innerHTML = '<div class="empty">تعذر تحميل طلبات التعبئة</div>'; });
+}
+function drawDeposits(){
+  var box = $('depList'); if(!box) return;
+  box.innerHTML = myDeps.map(function(d){
+    var st = DST[d.status] ? d.status : 'pending';
+    return '<div class="ord"><div class="l">' + fmt(st === 'approved' && d.credited ? d.credited : d.amount) + '</div><div class="m"><div class="st ' + st + '">' + ORD_ICON[st] + ' ' + DST[st] + '</div>' + fmtDate(d.date) + '</div>' +
+      '<div class="r"><b>' + esc(d.methodName) + '</b><span>' + esc(d.txn) + '</span>' + (d.cur && d.cur !== 'USD' && d.orig ? '<div class="small">دفعت: ' + esc(curTxt(d.orig, d.cur)) + '</div>' : '') + (st === 'rejected' && d.reason ? '<div class="reason">السبب: ' + esc(d.reason) + '</div>' : '') + '</div></div>';
+  }).join('') || '<div class="empty">ما في طلبات تعبئة</div>';
+}
+function mCur(m){ return (m && CUR[m.cur]) ? m.cur : 'USD'; }
+function openPay(mid){
+  if(frozenGuard()) return;
+  var m = byId(D.methods, mid); if(!m || !isOn(m)) return toast('طريقة الدفع غير متوفرة');
+  var cur = mCur(m), lim = [];
+  if(Number(m.min) > 0) lim.push('الحد الأدنى: ' + curTxt(m.min, cur));
+  if(Number(m.max) > 0) lim.push('الحد الأعلى: ' + curTxt(m.max, cur));
+  openModal('<div class="sheet"><div class="sheet-head"><h3>' + esc(m.name) + '</h3><span class="pricepill">' + CUR[cur][1] + ' ' + cur + '</span></div>' +
+    (m.note ? '<div class="pnote">📌 ' + esc(m.note) + '</div>' : '') +
+    (m.wallet ? '<div class="walbox"><div><div class="small">رقم المحفظة / الحساب</div><b>' + esc(m.wallet) + '</b></div><button class="btn btn-sm" data-act="copytxt" data-id="' + esc(m.wallet) + '">نسخ</button></div>' : '') +
+    (safeUrl(m.qr) ? '<img class="qrimg" src="' + esc(safeUrl(m.qr)) + '" alt="QR">' : '') +
+    '<div class="small" style="margin-bottom:8px;line-height:1.7;">بعد ما تدفع، اكتب المبلغ (بعملة ' + cur + ') ورقم العملية حتى يتأكد الأدمن ويضيف الرصيد:' + (lim.length ? '<br><b style="color:var(--gold2);">' + lim.join(' — ') + '</b>' : '') + '</div>' +
+    '<input type="number" inputmode="decimal" step="any" min="0" class="pin" id="depAmount" data-m="' + esc(mid) + '" placeholder="المبلغ اللي دفعته (' + cur + ')">' +
+    '<div class="pnote" id="depEq" style="display:none;"></div>' +
+    '<input type="text" class="pin" id="depTxn" placeholder="رقم العملية" maxlength="40" autocomplete="off">' +
+    '<div class="sheet-btns"><button class="btn" data-act="depsend" data-id="' + esc(mid) + '">إرسال طلب التعبئة</button><button class="btn-cancel" data-act="closemodal">إلغاء</button></div></div>');
+  $('modalBox').classList.add('sheetmode');
+}
+function updateDepEq(){
+  var el = $('depAmount'), eq = $('depEq'); if(!el || !eq) return;
+  var m = byId(D.methods, el.dataset.m), cur = mCur(m), v = parseFloat(el.value);
+  if(v > 0){ eq.style.display = 'block'; eq.textContent = '💵 رح ينضاف لرصيدك: ' + usd(Math.round(v / rate(cur) * 100)) + (cur !== 'USD' ? ' (سعر الصرف: 1$ = ' + numf(rate(cur), CUR[cur][2]) + ' ' + cur + ')' : ''); }
+  else eq.style.display = 'none';
+}
+var depSending = false;
+function sendDeposit(mid){
+  if(!ME || needFb() || depSending || frozenGuard()) return;
+  var m = byId(D.methods, mid); if(!m) return;
+  var cur = mCur(m), v = parseFloat($('depAmount').value);
+  var txn = $('depTxn').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if(!(v > 0)) return toast('اكتب المبلغ اللي دفعته');
+  if(Number(m.min) > 0 && v < Number(m.min)) return toast('الحد الأدنى للإيداع ' + curTxt(m.min, cur));
+  if(Number(m.max) > 0 && v > Number(m.max)) return toast('الحد الأعلى للإيداع ' + curTxt(m.max, cur));
+  var cents = Math.round(v / rate(cur) * 100);
+  if(!(cents > 0)) return toast('المبلغ صغير كتير');
+  if(txn.length < 4) return toast('اكتب رقم العملية (4 خانات عالأقل، أرقام وحروف انجليزية)');
+  depSending = true;
+  db.collection('deposits').doc(mid + '_' + txn).set({
+    userId: ME.uid, userName: ME.name, userPhone: ME.phone, methodId: mid, methodName: m.name,
+    amount: cents, orig: v, cur: cur, txn: txn, status: 'pending', date: FV.serverTimestamp()
+  }).then(function(){
+    depSending = false; closeModal(); toast('✅ انرسل الطلب، رح يراجعه الأدمن ويضيف الرصيد'); loadDeposits(); notify('deposit', mid + '_' + txn);
+  }).catch(function(e){
+    depSending = false; console.error(e);
+    toast(e.code === 'permission-denied' ? '❌ رقم العملية مستخدم من قبل، أو في خطأ بالبيانات' : '❌ ' + (e.message || e.code), 6000);
+  });
+}
+function copyTxt(t){
+  try { navigator.clipboard.writeText(t).then(function(){ toast('✅ تم النسخ'); }, function(){ toast('انسخه يدوياً'); }); }
+  catch(e){ toast('انسخه يدوياً'); }
+}
+/* ================= إعلانات الموقع (شريط + نافذة + واتساب) ================= */
+function waNum(){ var n = String(SITE.waNumber || '').replace(/\D/g, ''); return n || ADMIN_WA; }
+function applySite(){
+  var tk = $('ticker'), txt = String(SITE.tickerText || '').trim();
+  if(txt){
+    var l = safeUrl(SITE.tickerLink);
+    var html = '<span class="tk">' + (l ? '<a href="' + esc(l) + '" target="_blank" rel="noopener">' + esc(txt) + '</a>' : esc(txt)) + '</span>';
+    if(tk.innerHTML !== html) tk.innerHTML = html;
+  } else tk.innerHTML = '';
+  var bg = safeUrl(SITE.bgImg).replace(/["'\\\n\r()]/g, '');
+  document.body.classList.toggle('hasbg', !!bg);
+  document.body.style.backgroundImage = bg ? 'linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.8)), url("' + bg + '")' : '';
+  renderSocials();
+  toggleSiteUi();
+}
+function toggleSiteUi(){
+  var tk = $('ticker'); if(!tk) return;
+  tk.style.display = (ME && tk.innerHTML) ? 'block' : 'none';
+  $('waFab').classList.toggle('show', !!ME);
+}
+var SOC = [['facebook', '📘 فيسبوك'], ['tiktok', '🎵 تيك توك'], ['instagram', '📸 انستغرام']];
+function tgUser(){ return String(SITE.tgUser || '').replace(/^.*t\.me\//i, '').replace(/^@/, '').replace(/[^A-Za-z0-9_]/g, ''); }
+function renderSocials(){
+  var box = $('sideSocials'); if(!box) return;
+  var h = '<button class="nav" data-act="social" data-id="whatsapp">💬 واتساب ZOON</button>';
+  if(tgUser()) h += '<button class="nav" data-act="social" data-id="telegram">✈️ تلجرام ZOON</button>';
+  SOC.forEach(function(x){ if(safeUrl(SITE[x[0]])) h += '<button class="nav" data-act="social" data-id="' + x[0] + '">' + x[1] + '</button>'; });
+  box.innerHTML = h;
+}
+function contactMsg(){
+  if(!ME) return 'مرحبا ZOON 👋';
+  return 'مرحبا ZOON 👋\nالاسم: ' + ME.name + '\nرقم الهاتف: ' + ME.phone + '\nالايميل: ' + ME.email + '\n\nبدي أستفسر عن: ';
+}
+function social(k){
+  toggleMenu(false);
+  if(k === 'whatsapp'){ window.open('https://wa.me/' + waNum() + '?text=' + encodeURIComponent(contactMsg()), '_blank'); return; }
+  if(k === 'telegram'){
+    var u = tgUser(); if(!u) return;
+    copyQuiet(contactMsg());
+    window.open('https://t.me/' + u + '?text=' + encodeURIComponent(contactMsg()), '_blank');
+    toast('📋 انسخت رسالتك. إذا ما انكتبت لحالها، الصقها بالمحادثة', 5000);
+    return;
+  }
+  var l = safeUrl(SITE[k]); if(l) window.open(l, '_blank', 'noopener');
+}
+// إشعار تلجرام مجاني عبر وسيط (Cloudflare Worker): التوكن ما بينحط هون أبداً
+function notify(type, id){
+  var u = safeUrl(SITE.notifyUrl);
+  if(!u || !auth || !auth.currentUser) return Promise.resolve();
+  return auth.currentUser.getIdToken().then(function(t){
+    return fetch(u, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ type: type, id: id, token: t }) });
+  }).catch(function(e){ console.error(e); });
+}
+function maybePopup(){
+  if(!SITE.popupOn || !(SITE.popupTitle || SITE.popupText)) return;
+  try { if(sessionStorage.getItem('zoon_pop')) return; sessionStorage.setItem('zoon_pop', '1'); } catch(e){}
+  showPopup();
+}
+function showPopup(){
+  var l = safeUrl(SITE.popupLink);
+  openModal('<div class="modal-content"><h3>' + esc(SITE.popupTitle || '📢') + '</h3><div style="white-space:pre-wrap;line-height:1.9;color:#ddd;margin-bottom:14px;">' + esc(SITE.popupText || '') + '</div>' +
+    (l ? '<a class="btn" style="display:block;text-align:center;margin-bottom:8px;text-decoration:none;" href="' + esc(l) + '" target="_blank" rel="noopener">' + esc(SITE.popupBtn || 'فتح الرابط') + '</a>' : '') +
+    '<button class="btn btn-outline" data-act="closemodal">إغلاق</button></div>');
+  $('modalBox').dataset.pop = '1';
+}
+function renderSpent(){
+  var box = $('spentList'); if(!ME) return;
+  box.innerHTML = '<div class="empty">⏳</div>';
+  fetchMyOrders().then(function(all){
+    var list = all.filter(function(o){ return o.status !== 'rejected'; });
+    if(!list.length){ box.innerHTML = '<div class="empty">ما صرفت شي لسا</div>'; return; }
+    box.innerHTML = '<div class="tbl-wrap"><table><tr><th>التاريخ</th><th>اللعبة</th><th>الاضافة</th><th>السعر</th></tr>' +
+      list.map(function(o){ return '<tr><td>' + fmtDate(o.date) + '</td><td>' + esc(o.gameName || '-') + '</td><td>' + esc(o.addonName) + '</td><td>-' + fmt(o.price) + '</td></tr>'; }).join('') + '</table></div>';
+  }).catch(function(e){ console.error(e); box.innerHTML = '<div class="empty">تعذر تحميل البيانات</div>'; });
+}
+/* ================= فاتورة ================= */
+function invRows(o){
+  var st = ST[o.status] ? o.status : 'pending', ad = byId(D.addons, o.addonId);
+  return [['رقم العملية', o.id], ['التاريخ', fmtDT(o.date)], ['الزبون', o.userName || ''], ['اللعبة', o.gameName || ''],
+    ['المنتج', (o.qty ? o.qty + ' × ' : '') + (o.addonName || '')], [idInfo(ad).name, o.playerId || ''], ['السعر', usd(o.price)], ['الحالة', ST[st]]];
+}
+function openInvoice(id){
+  var o = byId(myOrders, id) || byId(D.orders, id); if(!o) return;
+  openModal('<div class="modal-content"><h3>🧾 فاتورة</h3><div class="inv"><div class="invh">ZOON ⚡</div>' +
+    invRows(o).map(function(r){ return '<div class="r2"><span>' + esc(r[0]) + '</span><b>' + esc(r[1]) + '</b></div>'; }).join('') +
+    '</div><div class="row" style="margin-top:14px;"><button class="btn" data-act="invdl" data-id="' + esc(id) + '">📥 تحميل كصورة</button><button class="btn btn-outline" data-act="closemodal">إغلاق</button></div></div>');
+}
+function invDownload(id){
+  var o = byId(myOrders, id) || byId(D.orders, id); if(!o) return;
+  var rows = invRows(o), W = 760, rh = 62, H = 230 + rows.length * rh + 90, S = 2;
+  var c = document.createElement('canvas'); c.width = W * S; c.height = H * S;
+  var x = c.getContext('2d'); x.scale(S, S);
+  x.fillStyle = '#0a0a0a'; x.fillRect(0, 0, W, H);
+  x.strokeStyle = '#d4af37'; x.lineWidth = 4; x.strokeRect(14, 14, W - 28, H - 28);
+  x.direction = 'rtl'; x.textBaseline = 'middle';
+  x.textAlign = 'center'; x.fillStyle = '#d4af37'; x.font = 'bold 54px Tahoma, Arial, sans-serif'; x.fillText('ZOON ⚡', W / 2, 78);
+  x.fillStyle = '#cccccc'; x.font = '26px Tahoma, Arial, sans-serif'; x.fillText('فاتورة شراء', W / 2, 130);
+  x.strokeStyle = '#444'; x.lineWidth = 1; x.beginPath(); x.moveTo(50, 165); x.lineTo(W - 50, 165); x.stroke();
+  function fit(t, mw){ t = String(t); while(t.length > 3 && x.measureText(t).width > mw) t = t.slice(0, -2); return t; }
+  rows.forEach(function(r, i){
+    var y = 165 + rh * (i + 0.6);
+    x.font = '22px Tahoma, Arial, sans-serif'; x.fillStyle = '#999'; x.textAlign = 'right'; x.fillText(r[0], W - 50, y);
+    x.font = 'bold 24px Tahoma, Arial, sans-serif'; x.fillStyle = '#ffffff'; x.textAlign = 'left'; x.direction = /[\u0600-\u06FF]/.test(String(r[1])) ? 'rtl' : 'ltr'; x.fillText(fit(r[1], 440), 50, y); x.direction = 'rtl';
+    x.strokeStyle = '#2a2a2a'; x.beginPath(); x.moveTo(50, y + rh / 2); x.lineTo(W - 50, y + rh / 2); x.stroke();
+  });
+  x.textAlign = 'center'; x.fillStyle = '#d4af37'; x.font = '22px Tahoma, Arial, sans-serif'; x.fillText('شكراً لتعاملكم مع ZOON ⚡', W / 2, H - 55);
+  c.toBlob(function(b){
+    if(!b) return toast('تعذر إنشاء الصورة');
+    var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'zoon-invoice-' + id + '.png';
+    document.body.appendChild(a); a.click(); a.remove(); toast('✅ تم تنزيل الفاتورة');
+  }, 'image/png');
+}
+
+/* ================= المسابقات والسحوبات ================= */
+var CONTESTS = [], myEntries = {};
+function cOpen(c){ return c.status === 'open' && ms(c.endAt) > Date.now(); }
+function leftTxt(c){
+  var d = ms(c.endAt) - Date.now(); if(d <= 0) return 'انتهى';
+  var days = Math.floor(d / 864e5), h = Math.floor(d % 864e5 / 36e5);
+  return days > 0 ? days + ' يوم و ' + h + ' ساعة' : h + ' ساعة و ' + Math.floor(d % 36e5 / 6e4) + ' دقيقة';
+}
+function loadContests(){
+  return db.collection('contests').orderBy('createdAt', 'desc').limit(50).get().then(function(s){
+    CONTESTS = s.docs.map(toObj);
+    return Promise.all(CONTESTS.map(function(c){
+      return db.collection('contests').doc(c.id).collection('entries').doc(ME.uid).get().then(function(e){ myEntries[c.id] = e.exists ? e.data({ serverTimestamps: 'estimate' }) : null; });
+    }));
+  });
+}
+function renderContests(){
+  var box = $('contestsList'); if(!ME) return;
+  box.innerHTML = '<div class="empty">⏳</div>';
+  loadContests().then(drawContests).catch(function(e){ console.error(e); box.innerHTML = '<div class="empty">تعذر تحميل المسابقات</div>'; });
+}
+function drawContests(){
+  var box = $('contestsList'); if(!box) return;
+  box.innerHTML = CONTESTS.map(function(c){
+    var open = cOpen(c), e = myEntries[c.id], draw = c.type === 'draw', full = Number(c.joined) >= Number(c.max);
+    var names = Array.isArray(c.winnerNames) ? c.winnerNames : [];
+    return '<div class="box cst"><h4>' + (draw ? '🎁 ' : '🏆 ') + esc(c.title) + '</h4><div class="small" style="line-height:2;">' +
+      (draw ? 'سحب إلكتروني — رسم الاشتراك: <b style="color:var(--gold2);">' + usd(c.fee) + '</b>' : 'مسابقة: أعلى صرف للرصيد خلال المدة — الاشتراك مجاني') +
+      '<br>🎁 الجائزة: <b style="color:#fff;">' + esc(c.prize) + '</b><br>👥 المشتركين: ' + esc(c.joined) + ' / ' + esc(c.max) + ' — 🏅 عدد الفائزين: ' + esc(c.winners) +
+      '<br>⏳ ' + (c.status === 'ended' ? 'انتهت' : (open ? 'بتنتهي بعد ' + leftTxt(c) : 'انتهت، بانتظار إعلان الفائزين')) + '</div>' +
+      (e && !draw && open ? '<div class="pnote">📊 صرفت من وقت اشتراكك: <b>' + usd(Math.max(0, Number(ME.totalOut) - Number(e.base))) + '</b></div>' : '') +
+      (c.status === 'ended' ? '<div class="pnote">🏆 الفائزون: ' + (names.length ? names.map(esc).join('، ') : 'ما في فائزين') + '</div>' : '') +
+      (e ? '<span class="badge">✅ أنت مشترك</span>' :
+        (open && !full ? '<button class="btn" style="margin-top:8px;" data-act="cjoin" data-id="' + esc(c.id) + '">' + (draw ? 'اشترك الآن (' + usd(c.fee) + ')' : 'شارك مجاناً') + '</button>' : '<span class="small">' + (full && open ? 'اكتمل العدد' : 'مقفلة') + '</span>')) +
+      '</div>';
+  }).join('') || '<div class="empty">ما في مسابقات حالياً. ترقّب!</div>';
+}
+var joining = false;
+function joinContest(id){
+  if(!ME || needFb() || joining || frozenGuard()) return;
+  var c = byId(CONTESTS, id); if(!c) return;
+  if(Number(c.fee) > 0 && !confirm('رح ينخصم ' + usd(c.fee) + ' من رصيدك كرسم اشتراك (غير مسترد). متابعة؟')) return;
+  var cRef = db.collection('contests').doc(id), eRef = cRef.collection('entries').doc(ME.uid), uRef = db.collection('users').doc(ME.uid);
+  joining = true;
+  db.runTransaction(function(t){
+    return Promise.all([t.get(cRef), t.get(eRef), t.get(uRef)]).then(function(r){
+      var cd = r[0].exists ? r[0].data() : null, u = r[2].data(), fee = Number(cd && cd.fee) || 0;
+      if(!cd) throw new Error('المسابقة غير موجودة');
+      if(r[1].exists) throw new Error('أنت مشترك أصلاً');
+      if(cd.status !== 'open' || ms(cd.endAt) <= Date.now()) throw new Error('المسابقة مقفلة');
+      if(Number(cd.joined) >= Number(cd.max)) throw new Error('اكتمل عدد المشتركين');
+      if(u.frozen) throw new Error('حسابك مجمّد');
+      if(fee > 0 && Number(u.balance) < fee) throw new Error('رصيدك ما بيكفي لرسم الاشتراك');
+      t.set(eRef, { uid: ME.uid, name: u.name, phone: u.phone, email: u.email, joinedAt: FV.serverTimestamp(), base: u.totalOut });
+      t.update(cRef, { joined: Number(cd.joined) + 1 });
+      if(fee > 0) t.update(uRef, { balance: u.balance - fee, lastContestId: id });
+    });
+  }).then(function(){ joining = false; toast('✅ تم اشتراكك، بالتوفيق!'); renderContests(); })
+    .catch(function(e){ joining = false; console.error(e); toast(e.code === 'permission-denied' ? '❌ تعذر الاشتراك (المسابقة مقفلة أو اكتمل العدد)' : '❌ ' + (e.message || e.code), 5000); });
+}
+
+/* ================= أسعار الصرف ================= */
+function setCur(c){
+  if(!CUR[c]) return;
+  CURSEL = c; try { localStorage.setItem(CKEY, c); } catch(e){}
+  updateHeader(); rerender(); toast('✅ العملة المعتمدة: ' + c);
+}
+function fillSelects(){
+  var f = $('cvFrom'), t = $('cvTo');
+  if(f.options.length) return;
+  var opts = Object.keys(CUR).map(function(c){ return '<option value="' + c + '">' + CUR[c][1] + ' ' + c + ' - ' + esc(CUR[c][0]) + '</option>'; }).join('');
+  f.innerHTML = opts; t.innerHTML = opts;
+  f.value = 'USD'; t.value = CURSEL !== 'USD' ? CURSEL : 'SYP';
+}
+function renderConverter(){
+  var amt = parseFloat($('cvAmount').value), from = $('cvFrom').value, to = $('cvTo').value;
+  if(!(amt >= 0)){ $('cvResult').textContent = '—'; return; }
+  var v = amt / rate(from) * rate(to);
+  $('cvResult').textContent = numf(amt, 2) + ' ' + from + ' = ' + numf(v, v >= 1 ? CUR[to][2] : 4) + ' ' + to;
+}
+function renderRatesTable(){
+  $('ratesTable').innerHTML = '<table><tr><th>العملة</th><th>1$ =</th><th>1 وحدة = $</th><th></th></tr>' +
+    Object.keys(CUR).map(function(c){
+      var r = rate(c), d = r >= 1000 ? 0 : (r >= 10 ? 2 : 4);
+      return '<tr><td>' + CUR[c][1] + ' <b>' + c + '</b><br><span class="small">' + esc(CUR[c][0]) + '</span></td><td>' + numf(r, d) + '</td><td>' + numf(1 / r, 4) + '</td><td>' +
+        (c === CURSEL ? '<span class="badge">معتمدة</span>' : '<button class="btn btn-sm" data-act="setcur" data-id="' + c + '">اعتمد</button>') + '</td></tr>';
+    }).join('') + '</table>';
+}
+function renderRates(){
+  fillSelects(); renderConverter(); renderRatesTable();
+  $('ratesMeta').textContent = RATES_UPDATED ? 'آخر تحديث من الإدارة: ' + new Date(RATES_UPDATED).toLocaleString('ar') : 'الأسعار الحالية افتراضية، الإدارة بتحدّثها.';
+}
+
+/* ================= إشعار الأدمن بالطلبات والتعبئات الجديدة (بينشتغل والصفحة مفتوحة) ================= */
+var unsubOrders = null, unsubDeps = null, seenOrders = null, seenDeps = null, pendingCount = 0, pendingDep = 0, audioCtx = null, titleTimer = null, BASE_TITLE = document.title;
+function initAudio(){
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+    if(!audioCtx) audioCtx = new AC();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+  } catch(e){}
+}
+document.addEventListener('click', initAudio);
+document.addEventListener('touchstart', initAudio, { passive: true });
+function beep(){
+  initAudio(); if(!audioCtx) return;
+  try {
+    [0, 0.28, 0.56].forEach(function(t, i){
+      var o = audioCtx.createOscillator(), g = audioCtx.createGain(), at = audioCtx.currentTime + t;
+      o.type = 'sine'; o.frequency.value = i === 2 ? 1175 : 880;
+      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.4, at + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, at + 0.24);
+      o.connect(g); g.connect(audioCtx.destination); o.start(at); o.stop(at + 0.25);
+    });
+  } catch(e){}
+}
+function adminAlert(title, body, tabs){
+  beep();
+  try { if(navigator.vibrate) navigator.vibrate([250, 120, 250, 120, 400]); } catch(e){}
+  toast(title + ': ' + body, 7000);
+  try { if(window.Notification && Notification.permission === 'granted') new Notification('ZOON ⚡ ' + title, { body: body }); } catch(e){}
+  if(titleTimer) clearInterval(titleTimer);
+  var on = false, n = 0;
+  titleTimer = setInterval(function(){ on = !on; document.title = on ? '🔔 ' + title + '!' : BASE_TITLE; if(++n > 30){ clearInterval(titleTimer); titleTimer = null; document.title = BASE_TITLE; } }, 900);
+  if(currentPage === 'admin' && tabs.indexOf(adminTab) > -1) loadAdminData().then(renderAdmin).catch(adminErr);
+}
+function newOrderAlert(list){
+  var o = list[0];
+  adminAlert('🔔 طلب جديد', (o.qty ? o.qty + ' × ' : '') + (o.addonName || '') + ' — ' + (o.userName || '') + (list.length > 1 ? ' (+' + (list.length - 1) + ' كمان)' : ''), ['orders', 'dashboard']);
+}
+function newDepositAlert(list){
+  var d = list[0];
+  adminAlert('💳 طلب تعبئة', (d.methodName || '') + ' — ' + (d.userName || '') + ' — ' + usd(d.amount) + (list.length > 1 ? ' (+' + (list.length - 1) + ' كمان)' : ''), ['deposits', 'dashboard']);
+}
+function stopOrderWatch(){
+  if(unsubOrders){ try { unsubOrders(); } catch(e){} unsubOrders = null; }
+  if(unsubDeps){ try { unsubDeps(); } catch(e){} unsubDeps = null; }
+  seenOrders = null; seenDeps = null; pendingCount = 0; pendingDep = 0;
+}
+function startOrderWatch(){
+  stopOrderWatch();
+  if(!(db && isAdmin)) return;
+  var first = true, firstD = true; seenOrders = {}; seenDeps = {};
+  unsubOrders = db.collection('orders').where('status', '==', 'pending').onSnapshot(function(s){
+    var fresh = [];
+    s.docs.forEach(function(d){ if(!seenOrders[d.id]){ seenOrders[d.id] = 1; if(!first) fresh.push(toObj(d)); } });
+    first = false; pendingCount = s.docs.length;
+    if(currentPage === 'admin') renderAdminTabsOnly();
+    if(fresh.length) newOrderAlert(fresh);
+  }, function(e){ console.error(e); });
+  unsubDeps = db.collection('deposits').where('status', '==', 'pending').onSnapshot(function(s){
+    var fresh = [];
+    s.docs.forEach(function(d){ if(!seenDeps[d.id]){ seenDeps[d.id] = 1; if(!firstD) fresh.push(toObj(d)); } });
+    firstD = false; pendingDep = s.docs.length;
+    if(currentPage === 'admin') renderAdminTabsOnly();
+    if(fresh.length) newDepositAlert(fresh);
+  }, function(e){ console.error(e); });
+}
+function renderAdminTabsOnly(){
+  var el = $('adminTabs'); if(!el || !el.innerHTML) return;
+  el.innerHTML = adminTabsHtml();
+}
+function enableNotif(){
+  initAudio(); beep();
+  if(!window.Notification){ return toast('🔔 الصوت شغّال. إشعارات المتصفح غير مدعومة هون', 5000); }
+  Notification.requestPermission().then(function(p){
+    toast(p === 'granted' ? '✅ تم تفعيل الإشعارات والصوت' : '🔔 الصوت شغّال، بس إشعارات المتصفح مرفوضة', 5000);
+  });
+}
+
+/* ================= لوحة الأدمن ================= */
+function openAdminGate(){
+  closeModal(); toggleMenu(false);
+  if(ME && isAdmin){ openAdmin(); } else { wantAdmin = true; showPage('adminlogin'); }
+}
+function openAdmin(){
+  if(!(ME && isAdmin)){ showPage('adminlogin'); return; }
+  showPage('admin');
+  $('adminTabs').innerHTML = '';
+  $('adminBody').innerHTML = '<div class="empty">⏳ جاري التحميل...</div>';
+  loadAdminData().then(renderAdmin).catch(function(e){ adminErr(e); renderAdmin(); });
+}
+function admLogin(){
+  if(needFb()) return;
+  var email = $('admEmail').value.trim(), pass = $('admPass').value;
+  if(!email || !pass) return toast('عبّي الحقول');
+  wantAdmin = true;
+  auth.signInWithEmailAndPassword(email, pass).then(function(cred){
+    $('admPass').value = '';
+    // إذا نفس الحساب كان داخل أصلاً ما بيجي حدث تغيير مستخدم، فمنفتح اللوحة يدوياً
+    if(ME && ME.uid === cred.user.uid){ wantAdmin = false; if(isAdmin) openAdmin(); else toast('⛔ هاد الحساب ما عنده صلاحية إدارة', 4000); }
+  }).catch(function(e){ wantAdmin = false; console.error(e); toast(authMsg(e), 6000); });
+}
+function admExit(){
+  wantAdmin = false;
+  try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+  if(ME){ nav('home'); } else { updateHeader(); showPage('login'); }
+}
+function loadAdminData(){
+  return Promise.all([
+    db.collection('users').orderBy('createdAt', 'desc').limit(500).get(),
+    db.collection('orders').orderBy('date', 'desc').limit(200).get(),
+    db.collection('codes').orderBy('createdAt', 'desc').limit(100).get(),
+    db.collection('deposits').orderBy('date', 'desc').limit(200).get(),
+    db.collection('contests').orderBy('createdAt', 'desc').limit(100).get()
+  ]).then(function(r){
+    D.users = r[0].docs.map(toObj); D.orders = r[1].docs.map(toObj); D.codes = r[2].docs.map(toObj); D.deposits = r[3].docs.map(toObj); D.contests = r[4].docs.map(toObj);
+  });
+}
+function adminErr(e){
+  console.error(e);
+  toast(e && e.code === 'permission-denied' ? '❌ ما في صلاحية. تأكد من قواعد Firestore ومن إضافة حسابك لمجموعة admins' : '❌ ' + ((e && (e.message || e.code)) || 'خطأ'), 6000);
+}
+function adminDone(msg, withCatalog){
+  if(msg) toast(msg);
+  return Promise.all([loadAdminData(), withCatalog ? loadCatalog() : Promise.resolve()]).then(renderAdmin).catch(adminErr);
+}
+var ADMIN_TABS = [['dashboard','📊 إحصائيات'],['users','👥 الزباين'],['orders','📦 الطلبات'],['deposits','📥 طلبات التعبئة'],['catalog','🎮 الألعاب والباقات'],['methods','💳 طرق الدفع'],['codes','💰 رصيد وأكواد'],['contests','🏆 المسابقات والسحوبات'],['rates','💱 أسعار الصرف'],['site','📢 الإعلانات والواتساب'],['settings','⚙️ إعدادات']];
+function adminTabsHtml(){
+  return ADMIN_TABS.map(function(t){
+    var n = t[0] === 'orders' ? pendingCount : (t[0] === 'deposits' ? pendingDep : 0);
+    var label = t[1] + (n ? ' (' + n + ')' : '');
+    return '<button class="' + (t[0] === adminTab ? 'on' : '') + '" data-act="admintab" data-id="' + t[0] + '">' + label + '</button>';
+  }).join('');
+}
+function renderAdmin(){
+  if(!(ME && isAdmin)){ showPage('adminlogin'); return; }
+  var keep = { ord: val('ordSearch'), dep: val('depSearch'), us: val('userSearch') };
+  $('adminTabs').innerHTML = adminTabsHtml();
+  var h = '';
+  if(adminTab === 'dashboard') h = admDashboard();
+  else if(adminTab === 'users') h = admUsers();
+  else if(adminTab === 'orders') h = admOrders();
+  else if(adminTab === 'deposits') h = admDeposits();
+  else if(adminTab === 'catalog') h = admCatalog();
+  else if(adminTab === 'methods') h = admMethods();
+  else if(adminTab === 'codes') h = admCodes();
+  else if(adminTab === 'contests') h = admContests();
+  else if(adminTab === 'rates') h = admRates();
+  else if(adminTab === 'site') h = admSite();
+  else h = admSettings();
+  $('adminBody').innerHTML = h;
+  if($('ordSearch')) $('ordSearch').value = keep.ord;
+  if($('depSearch')) $('depSearch').value = keep.dep;
+  if($('userSearch')) $('userSearch').value = keep.us;
+  if(adminTab === 'users') renderUsersTable();
+  if(adminTab === 'orders') renderOrdersTable();
+  if(adminTab === 'deposits') renderDepositsTable();
+  if(adminTab === 'catalog') renderAaPrices();
+}
+function admDashboard(){
+  var today = new Date().toDateString();
+  var ordersToday = D.orders.filter(function(o){ return new Date(ms(o.date)).toDateString() === today; }).length;
+  var pend = D.orders.filter(function(o){ return o.status === 'pending'; }).length;
+  var sales = D.orders.filter(function(o){ return o.status === 'approved'; }).reduce(function(s, o){ return s + Number(o.price || 0); }, 0);
+  var bal = D.users.reduce(function(s, u){ return s + Number(u.balance || 0); }, 0);
+  var free = D.codes.filter(function(c){ return !c.used; }).length;
+  var cards = [
+    ['👥', 'الزباين', D.users.length], ['📦', 'طلبات اليوم', ordersToday],
+    ['⏳', 'طلبات معلّقة', pend], ['🛒', 'آخر الطلبات المحمّلة', D.orders.length],
+    ['💰', 'مبيعات منفّذة', usd(sales)], ['🏦', 'مجموع أرصدة الزباين', usd(bal)],
+    ['🎮', 'الألعاب', D.games.length], ['🎫', 'أكواد فعّالة', free],
+    ['📥', 'تعبئات معلّقة', pendingDep], ['💳', 'طرق الدفع', D.methods.length]
+  ];
+  return '<div class="stats">' + cards.map(function(c){
+    return '<div class="stat"><div class="ic">' + c[0] + '</div><div class="num">' + esc(c[2]) + '</div><div class="lbl">' + c[1] + '</div></div>';
+  }).join('') + '</div><div class="meta">الإحصائيات بتعتمد على آخر 200 طلب و500 زبون.</div>';
+}
+function admUsers(){
+  return '<div class="box"><h4>👥 الزباين (' + D.users.length + ')</h4><input class="inp" id="userSearch" placeholder="🔍 ابحث بالاسم أو الرقم أو الايميل"></div><div class="tbl-wrap" id="usersTable"></div>';
+}
+function renderUsersTable(){
+  var box = $('usersTable'); if(!box) return;
+  var q = ($('userSearch') ? $('userSearch').value : '').trim().toLowerCase();
+  var list = D.users.filter(function(u){
+    return !q || String(u.name || '').toLowerCase().indexOf(q) > -1 || String(u.phone || '').indexOf(q) > -1 || String(u.email || '').toLowerCase().indexOf(q) > -1;
+  });
+  if(!list.length){ box.innerHTML = '<div class="empty">ما في زباين</div>'; return; }
+  box.innerHTML = '<table><tr><th>الزبون</th><th>الهاتف</th><th>الرصيد</th><th>عبّى</th><th>صرف</th><th>التسجيل</th><th></th></tr>' +
+    list.map(function(u){
+      return '<tr' + (u.frozen ? ' class="off"' : '') + '><td>' + esc(u.name) + (u.frozen ? ' <span class="status rejected">مجمّد</span>' : '') + '<br><span class="small">' + esc(u.email) + '</span></td><td>' + esc(u.phone) + '</td><td>' + usd(u.balance) + '</td><td>' + usd(u.totalIn) + '</td><td>' + usd(u.totalOut) + '</td>' +
+        '<td>' + fmtDate(u.createdAt) + '</td>' +
+        '<td><div class="act-row"><button class="btn btn-ok btn-sm" data-act="userbal" data-id="' + esc(u.id) + '">± رصيد</button><button class="btn btn-sm ' + (u.frozen ? 'btn-ok' : 'btn-outline') + '" data-act="userfreeze" data-id="' + esc(u.id) + '">' + (u.frozen ? '🔓 فك التجميد' : '🧊 تجميد') + '</button><button class="btn btn-danger btn-sm" data-act="deluser" data-id="' + esc(u.id) + '">حذف</button></div></td></tr>';
+    }).join('') + '</table>';
+}
+/* ---- أدوات الصور والنماذج ---- */
+function compressImage(file, max){
+  return new Promise(function(res, rej){
+    var fr = new FileReader();
+    fr.onerror = function(){ rej(new Error('read')); };
+    fr.onload = function(){
+      var im = new Image();
+      im.onerror = function(){ rej(new Error('img')); };
+      im.onload = function(){
+        var s = Math.min(1, max / Math.max(im.width, im.height)), w = Math.max(1, Math.round(im.width * s)), h = Math.max(1, Math.round(im.height * s));
+        var c = document.createElement('canvas'); c.width = w; c.height = h;
+        var cx = c.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, w, h); cx.drawImage(im, 0, 0, w, h);
+        var q = 0.82, u = c.toDataURL('image/jpeg', q);
+        while(u.length > 220000 && q > 0.35){ q -= 0.1; u = c.toDataURL('image/jpeg', q); }
+        if(u.length > 400000) rej(new Error('big')); else res(u);
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+function pickImg(file, max, key){
+  compressImage(file, max).then(function(u){
+    IMGS[key] = u;
+    var pv = $('pv-' + key); if(pv){ pv.src = u; pv.style.display = 'block'; }
+    toast('✅ انحفظت الصورة مؤقتاً، اضغط حفظ/إضافة لتثبيتها');
+  }).catch(function(){ toast('❌ تعذر قراءة الصورة، جرّب صورة تانية'); });
+}
+function imgField(key, cur, max){
+  IMGS[key] = undefined;
+  return '<div class="imgfld"><img id="pv-' + key + '" alt="" src="' + esc(cur || '') + '" style="' + (cur ? '' : 'display:none;') + '">' +
+    '<label class="btn btn-outline btn-sm" style="display:inline-block;cursor:pointer;">📷 اختر صورة من الجوال<input type="file" accept="image/*" hidden data-imgpick="' + key + '" data-max="' + max + '"></label>' +
+    '<button class="btn btn-danger btn-sm" data-act="imgdel" data-id="' + key + '">✖ بلا صورة</button></div>';
+}
+function lab(t){ return '<label class="lb2">' + t + '</label>'; }
+function val(id){ var e = $(id); return e ? e.value.trim() : ''; }
+function thumb(src){ return safeUrl(src) ? '<img class="thumb" src="' + esc(safeUrl(src)) + '" alt="">' : ''; }
+function parseServers(s){
+  var out = [];
+  String(s || '').split(/[,،\n]/).forEach(function(x){ x = x.trim().slice(0, 30); if(x && out.indexOf(x) < 0 && out.length < 12) out.push(x); });
+  return out;
+}
+function btns(kind, x){
+  var k = kind + ':' + esc(x.id);
+  return '<button class="btn btn-outline btn-sm" data-act="edit" data-id="' + k + '">✏️</button>' +
+    '<button class="btn btn-sm ' + (isOn(x) ? 'btn-outline' : 'btn-ok') + '" data-act="toggle" data-id="' + k + '">' + (isOn(x) ? '⏸ إيقاف' : '▶ تشغيل') + '</button>' +
+    '<button class="btn btn-danger btn-sm" data-act="del' + kind + '" data-id="' + esc(x.id) + '">🗑</button>';
+}
+function curOpts(sel){ return ['USD', 'SYP', 'TRY'].map(function(c){ return '<option value="' + c + '"' + (c === sel ? ' selected' : '') + '>' + CUR[c][1] + ' ' + c + ' — ' + CUR[c][0] + '</option>'; }).join(''); }
+var ID_OPTS = '<option value="id">المطلوب من الزبون: ايدي (ID)</option><option value="phone">المطلوب من الزبون: رقم هاتف</option><option value="user">المطلوب من الزبون: يوزر</option>';
+
+/* ---- الطلبات ---- */
+function admOrders(){
+  return '<div class="box"><input class="inp" id="ordSearch" placeholder="🔍 رقم الطلب / اسم الزبون / هاتف / معرّف اللاعب / المنتج"></div><div id="ordersTable"></div>';
+}
+function renderOrdersTable(){
+  var box = $('ordersTable'); if(!box) return;
+  var q = val('ordSearch').toLowerCase();
+  var list = D.orders.filter(function(o){
+    return !q || [o.id, o.userName, o.userPhone, o.playerId, o.addonName, o.gameName].some(function(x){ return String(x || '').toLowerCase().indexOf(q) > -1; });
+  });
+  if(!list.length){
+    box.innerHTML = '<div class="empty">' + (q ? 'ما في نتيجة ضمن آخر 200 طلب' : 'لا توجد طلبات') + '</div>' + (q ? '<button class="btn btn-outline" data-act="ordfind">🔎 ابحث برقم الطلب بكل الطلبات</button>' : '');
+    return;
+  }
+  box.innerHTML = '<div class="tbl-wrap"><table><tr><th>رقم / تاريخ</th><th>الزبون</th><th>اللعبة / الباقة</th><th>المعرّف</th><th>السعر</th><th>الحالة</th><th></th></tr>' +
+    list.map(function(o){
+      var st = ST[o.status] ? o.status : 'pending';
+      return '<tr><td><b style="direction:ltr;display:inline-block;">#' + esc(o.id) + '</b><br>' + fmtDate(o.date) + '</td><td>' + esc(o.userName) + '<br><span class="small">' + esc(o.userPhone) + '</span></td><td>' + esc(o.gameName || '') + '<br>' + (o.qty ? esc(o.qty) + ' × ' : '') + esc(o.addonName) + '</td><td><span class="small">' + esc(idInfo(byId(D.addons, o.addonId)).short) + '</span><br><b style="direction:ltr;display:inline-block;">' + esc(o.playerId) + '</b></td><td>' + usd(o.price) + '</td>' +
+        '<td><span class="status ' + st + '">' + ST[st] + '</span>' + (st === 'rejected' && o.reason ? '<div class="reason">' + esc(o.reason) + '</div>' : '') + '</td><td>' +
+        '<div class="act-row">' + (st === 'pending' ? '<button class="btn btn-ok btn-sm" data-act="ordok" data-id="' + esc(o.id) + '">✔</button><button class="btn btn-danger btn-sm" data-act="ordno" data-id="' + esc(o.id) + '">✖</button>' : '') +
+        '<button class="btn btn-outline btn-sm" data-act="invoice" data-id="' + esc(o.id) + '">🧾</button></div></td></tr>';
+    }).join('') + '</table></div><div class="meta">✖ رفض الطلب بيرجّع المبلغ لرصيد الزبون تلقائياً، وبتكتب السبب وبيظهر للزبون.</div>';
+}
+
+/* ---- طلبات التعبئة ---- */
+function admDeposits(){
+  return '<div class="box"><input class="inp" id="depSearch" placeholder="🔍 رقم العملية / اسم الزبون / هاتف / طريقة الدفع"></div><div id="depTable"></div>';
+}
+function renderDepositsTable(){
+  var box = $('depTable'); if(!box) return;
+  var q = val('depSearch').toLowerCase();
+  var list = D.deposits.filter(function(d){
+    return !q || [d.txn, d.userName, d.userPhone, d.methodName].some(function(x){ return String(x || '').toLowerCase().indexOf(q) > -1; });
+  });
+  if(!list.length){ box.innerHTML = '<div class="empty">' + (q ? 'ما في نتيجة' : 'لا توجد طلبات تعبئة') + '</div>'; return; }
+  box.innerHTML = '<div class="tbl-wrap"><table><tr><th>التاريخ</th><th>الزبون</th><th>الطريقة</th><th>المبلغ</th><th>رقم العملية</th><th>الحالة</th><th></th></tr>' +
+    list.map(function(d){
+      var st = DST[d.status] ? d.status : 'pending';
+      return '<tr><td>' + fmtDate(d.date) + '</td><td>' + esc(d.userName) + '<br><span class="small">' + esc(d.userPhone) + '</span></td><td>' + esc(d.methodName) + '</td><td>' + usd(d.amount) + (d.cur && d.cur !== 'USD' && d.orig ? '<br><span class="small">دفع: ' + esc(curTxt(d.orig, d.cur)) + '</span>' : '') + (d.credited && d.credited !== d.amount ? '<br><span class="small">انضاف: ' + usd(d.credited) + '</span>' : '') + '</td>' +
+        '<td><b style="direction:ltr;display:inline-block;">' + esc(d.txn) + '</b></td><td><span class="status ' + st + '">' + DST[st] + '</span>' + (st === 'rejected' && d.reason ? '<div class="reason">' + esc(d.reason) + '</div>' : '') + '</td><td>' +
+        (st === 'pending' ? '<div class="act-row"><button class="btn btn-ok btn-sm" data-act="depok" data-id="' + esc(d.id) + '">✔</button><button class="btn btn-danger btn-sm" data-act="depno" data-id="' + esc(d.id) + '">✖</button></div>' : '') + '</td></tr>';
+    }).join('') + '</table></div><div class="meta">✔ بيضيف الرصيد للزبون (فيك تعدّل المبلغ قبل الإضافة). رقم العملية ما بينقبل مرتين لنفس الطريقة.</div>';
+}
+
+/* ---- الألعاب والباقات ---- */
+function admCatalog(){
+  var secOpts = '<option value="">— بدون مصنّف —</option>' + D.sections.map(function(x){ return '<option value="' + esc(x.id) + '">' + esc(x.name) + '</option>'; }).join('');
+  var secBox = '<div class="box"><h4>📚 المصنّفات (أقسام رئيسية للألعاب، مثلاً: ألعاب / تفعيل اشتراكات)</h4><div class="row"><input class="inp" id="asName" placeholder="اسم المصنّف"></div>' + imgField('asImg', '', 240) + '<button class="btn" data-act="addsection">إضافة مصنّف</button>' +
+    (D.sections.map(function(x){ var n = D.games.filter(function(g){ return g.section === x.id; }).length; return '<div class="row" style="margin-top:8px;"><b style="color:var(--gold);">' + thumb(x.img) + '📚 ' + esc(x.name) + ' <span class="small">(' + n + ' لعبة)</span></b><button class="btn btn-outline btn-sm" data-act="edit" data-id="section:' + esc(x.id) + '">✏️</button><button class="btn btn-danger btn-sm" data-act="delsection" data-id="' + esc(x.id) + '">🗑</button></div>'; }).join('') || '<div class="small" style="margin-top:8px;">ما في مصنّفات لسا. أضف مصنّف وبعدين اختاره وإنت بتضيف اللعبة.</div>') + '</div>';
+  var gOpts = D.games.map(function(g){ return '<option value="' + esc(g.id) + '">' + esc(g.name) + '</option>'; }).join('');
+  var cOpts = D.categories.map(function(c){ var g = byId(D.games, c.game); return '<option value="' + esc(c.id) + '">' + esc((g ? g.name : '?') + ' / ' + c.name) + '</option>'; }).join('');
+  var tree = D.games.map(function(g){
+    var cats = D.categories.filter(function(c){ return c.game === g.id; });
+    var sv = Array.isArray(g.servers) && g.servers.length ? '<div class="small" style="margin:6px 0;">🌐 السيرفرات: ' + g.servers.map(function(s){ return '<span class="tag">' + esc(s) + '</span>'; }).join('') + '</div>' : '';
+    return '<div class="box' + (isOn(g) ? '' : ' off') + '"><div class="row">' + thumb(g.img) + '<b style="color:var(--gold);">🎮 ' + esc(g.name) + (isOn(g) ? '' : ' (موقوفة)') + '</b>' + (byId(D.sections, g.section) ? '<span class="tag">📚 ' + esc(byId(D.sections, g.section).name) + '</span>' : '') + btns('game', g) + '</div>' + sv +
+      cats.map(function(c){
+        var ads = D.addons.filter(function(a){ return a.category === c.id; });
+        return '<div class="' + (isOn(c) ? '' : 'off') + '" style="margin:10px 0 0 0; padding-right:10px; border-right:2px solid #333;"><div class="row">' + thumb(c.img) + '<span>📂 ' + esc(c.name) + (isOn(c) ? '' : ' (موقوف)') + '</span>' + btns('cat', c) + '</div>' +
+          ads.map(function(a){
+            var qty = a.kind === 'qty';
+            return '<div class="row small ' + (isOn(a) ? '' : 'off') + '" style="margin-top:8px;">' + thumb(a.img) + '<span>• ' + esc(a.name) + ' — ' + (qty ? 'كل 1$ = ' + esc(a.perUsd) + ' ' + esc(a.unit || 'وحدة') : usd(a.price)) +
+              (a.server ? ' <span class="tag">🌐 ' + esc(a.server) + '</span>' : '') + ' <i style="color:var(--gold2);font-style:normal;">[' + esc(idInfo(a).name) + ']</i>' + (isOn(a) ? '' : ' <b>(موقوف)</b>') +
+              (a.note ? '<br><span style="color:#aaa;">📌 ' + esc(a.note) + '</span>' : '') + '</span>' + btns('addon', a) + '</div>';
+          }).join('') + '</div>';
+      }).join('') + '</div>';
+  }).join('') || '<div class="empty">ما في ألعاب</div>';
+  return secBox + (D.games.length ? '' : '<div class="box"><h4>🧪 بيانات تجريبية</h4><button class="btn btn-outline" data-act="seed">إضافة لعبتين وباقات للتجربة</button></div>') +
+    '<div class="box"><h4>➕ إضافة لعبة / تطبيق</h4>' + lab('المصنّف') + '<select class="inp" id="agSection">' + secOpts + '</select><div class="row" style="margin-top:8px;"><input class="inp" id="agName" placeholder="الاسم"></div>' +
+    '<div class="row"><input class="inp" id="agServers" placeholder="السيرفرات (اختياري، افصل بفاصلة): أوروبا، عالمي، الشرق"></div>' + imgField('agImg', '', 420) + '<button class="btn" data-act="addgame">إضافة</button></div>' +
+    '<div class="box"><h4>➕ إضافة قسم</h4><div class="row"><select class="inp" id="acGame">' + gOpts + '</select><input class="inp" id="acName" placeholder="اسم القسم"></div><div class="row"><input class="inp" id="acNote" maxlength="200" placeholder="ملاحظة على القسم (اختياري) — بتظهر للزبون"></div>' + lab('لون الملاحظة') + '<input type="color" id="acNoteColor" value="' + '#f5d76e' + '" style="width:70px;height:42px;padding:2px;background:#0a0a0a;border:1px solid #333;border-radius:10px;">' + imgField('acImg', '', 240) + '<button class="btn" data-act="addcat">إضافة قسم</button></div>' +
+    '<div class="box"><h4>➕ إضافة باقة</h4><div class="row"><select class="inp" id="aaCat">' + cOpts + '</select></div><div class="row"><input class="inp" id="aaName" placeholder="اسم الباقة"></div>' +
+    '<div class="row"><select class="inp" id="aaKind"><option value="fixed">نوع الباقة: سعر ثابت</option><option value="qty">نوع الباقة: بالعدّاد (الزبون بيكتب الكمية)</option></select></div>' +
+    '<div id="aaQtyBox" style="display:none;"><div class="row"><input class="inp" id="aaMin" type="number" min="1" placeholder="أقل كمية"><input class="inp" id="aaMax" type="number" min="1" placeholder="أكبر كمية"></div><div class="row"><input class="inp" id="aaUnit" maxlength="20" placeholder="اسم الوحدة (قطعة، عملة، نقطة...)"></div></div>' +
+    '<div id="aaPrices"></div>' +
+    '<div class="row"><select class="inp" id="aaIdType">' + ID_OPTS + '</select></div><div class="row"><input class="inp" id="aaNote" maxlength="200" placeholder="ملاحظة عالمنتج (اختياري) — بتظهر للزبون قبل الشراء"></div>' + lab('لون الملاحظة') + '<input type="color" id="aaNoteColor" value="' + '#f5d76e' + '" style="width:70px;height:42px;padding:2px;background:#0a0a0a;border:1px solid #333;border-radius:10px;">' + imgField('aaImg', '', 240) +
+    '<button class="btn" data-act="addaddon">إضافة باقة</button><div class="meta">إذا اللعبة إلها سيرفرات، اكتب سعر لكل سيرفر (اللي بتتركه فاضي بينتخطى). مثال العدّاد: 50 قطعة بـ 1$ → اكتب 50.</div></div>' + tree +
+    '<div class="meta">⏸ إيقاف لعبة أو قسم بيوقف كل اللي تحته، و▶ تشغيل بيشغّل الكل. تعديل اسم سيرفر لازم تعدّل باقاته كمان.</div>';
+}
+function renderAaPrices(){
+  var box = $('aaPrices'); if(!box) return;
+  var cat = byId(D.categories, $('aaCat').value), g = cat ? byId(D.games, cat.game) : null;
+  var sv = g && Array.isArray(g.servers) && g.servers.length ? g.servers : [''];
+  var qty = $('aaKind').value === 'qty';
+  $('aaQtyBox').style.display = qty ? '' : 'none';
+  box.innerHTML = sv.map(function(s){
+    return '<div class="row">' + (s ? '<span>🌐 ' + esc(s) + '</span>' : '') + '<input class="inp" type="number" step="0.01" min="0" data-sp="' + esc(s) + '" placeholder="' + (qty ? 'كم وحدة بـ 1$ ؟' : 'السعر بالدولار') + (s ? ' (فاضي = تخطي)' : '') + '"></div>';
+  }).join('');
+}
+function toggleKindBox(){
+  var q = $('edKind') && $('edKind').value === 'qty';
+  document.querySelectorAll('.kf').forEach(function(el){ el.style.display = q ? 'none' : ''; });
+  document.querySelectorAll('.kq').forEach(function(el){ el.style.display = q ? '' : 'none'; });
+}
+function openEditor(key){
+  var p = key.split(':'), kind = p[0], id = p[1], h = '', title = '';
+  if(kind === 'game'){
+    var g = byId(D.games, id); if(!g) return; title = '✏️ تعديل اللعبة';
+    var eso = '<option value="">— بدون مصنّف —</option>' + D.sections.map(function(x){ return '<option value="' + esc(x.id) + '"' + (x.id === g.section ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('');
+    h = lab('المصنّف') + '<select class="inp" id="edSection">' + eso + '</select>' + lab('الاسم') + '<input class="inp" id="edName" value="' + esc(g.name) + '">' + lab('السيرفرات (افصل بفاصلة، فاضي = بلا سيرفرات)') + '<input class="inp" id="edServers" value="' + esc((g.servers || []).join('، ')) + '">' + lab('الصورة') + imgField('edImg', safeUrl(g.img), 420);
+  } else if(kind === 'section'){
+    var sx = byId(D.sections, id); if(!sx) return; title = '✏️ تعديل المصنّف';
+    h = lab('الاسم') + '<input class="inp" id="edName" value="' + esc(sx.name) + '">' + lab('الصورة') + imgField('edImg', safeUrl(sx.img), 240);
+  } else if(kind === 'cat'){
+    var c = byId(D.categories, id); if(!c) return; title = '✏️ تعديل القسم';
+    h = lab('الاسم') + '<input class="inp" id="edName" value="' + esc(c.name) + '">' + lab('ملاحظة على القسم (بتظهر للزبون)') + '<input class="inp" id="edNote" maxlength="200" value="' + esc(c.note || '') + '">' + lab('لون الملاحظة') + '<input type="color" id="edNoteColor" value="' + (colorOk(c.noteColor) ? c.noteColor : '#f5d76e') + '" style="width:70px;height:42px;padding:2px;background:#0a0a0a;border:1px solid #333;border-radius:10px;">' + lab('الصورة') + imgField('edImg', safeUrl(c.img), 240);
+  } else if(kind === 'addon'){
+    var a = byId(D.addons, id); if(!a) return; title = '✏️ تعديل الباقة';
+    var cat = byId(D.categories, a.category), gm = cat ? byId(D.games, cat.game) : null, sv = gm && Array.isArray(gm.servers) ? gm.servers.slice() : [];
+    if(a.server && sv.indexOf(a.server) < 0) sv.push(a.server);
+    var qty = a.kind === 'qty';
+    h = lab('الاسم') + '<input class="inp" id="edName" value="' + esc(a.name) + '">' +
+      lab('نوع الباقة') + '<select class="inp" id="edKind"><option value="fixed"' + (qty ? '' : ' selected') + '>سعر ثابت</option><option value="qty"' + (qty ? ' selected' : '') + '>بالعدّاد (الزبون بيكتب الكمية)</option></select>' +
+      '<div class="kf">' + lab('السعر بالدولار') + '<input class="inp" id="edPrice" type="number" step="0.01" min="0" value="' + (a.price ? (a.price / 100).toFixed(2) : '') + '">' + lab('السعر قبل الخصم (اختياري: بيظهر مشطوب مع شارة «عرض»)') + '<input class="inp" id="edOld" type="number" step="0.01" min="0" value="' + (a.oldPrice ? (a.oldPrice / 100).toFixed(2) : '') + '"></div>' +
+      '<div class="kq">' + lab('كم وحدة بـ 1$ ؟') + '<input class="inp" id="edPer" type="number" min="1" value="' + esc(a.perUsd || '') + '">' + lab('أقل كمية / أكبر كمية') + '<div class="row"><input class="inp" id="edMin" type="number" min="1" value="' + esc(a.min || 1) + '"><input class="inp" id="edMax" type="number" min="1" value="' + esc(a.max || 100000) + '"></div>' + lab('اسم الوحدة') + '<input class="inp" id="edUnit" maxlength="20" value="' + esc(a.unit || '') + '"></div>' +
+      lab('السيرفر') + '<select class="inp" id="edServer"><option value="">كل السيرفرات</option>' + sv.map(function(s){ return '<option value="' + esc(s) + '"' + (s === a.server ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select>' +
+      lab('المطلوب من الزبون') + '<select class="inp" id="edIdType">' + ID_OPTS.replace('value="' + (a.idType || 'id') + '"', 'value="' + (a.idType || 'id') + '" selected') + '</select>' +
+      lab('ملاحظة (بتظهر للزبون)') + '<input class="inp" id="edNote" maxlength="200" value="' + esc(a.note || '') + '">' + lab('لون الملاحظة') + '<input type="color" id="edNoteColor" value="' + (colorOk(a.noteColor) ? a.noteColor : '#f5d76e') + '" style="width:70px;height:42px;padding:2px;background:#0a0a0a;border:1px solid #333;border-radius:10px;">' + lab('الصورة') + imgField('edImg', safeUrl(a.img), 240);
+  } else if(kind === 'method'){
+    var m = byId(D.methods, id); if(!m) return; title = '✏️ تعديل طريقة الدفع';
+    h = lab('الاسم') + '<input class="inp" id="edName" value="' + esc(m.name) + '">' + lab('رقم المحفظة / الحساب') + '<input class="inp" id="edWallet" value="' + esc(m.wallet || '') + '">' + lab('ملاحظة للزبون') + '<textarea class="inp" id="edNote" maxlength="300">' + esc(m.note || '') + '</textarea>' + lab('عملة الدفع (الزبون بيكتب المبلغ بها)') + '<select class="inp" id="edCur">' + curOpts(mCur(m)) + '</select>' + lab('الحد الأدنى / الأعلى للإيداع (بعملة الطريقة، 0 = بلا حد)') + '<div class="row"><input class="inp" id="edMinD" type="number" min="0" step="any" value="' + esc(m.min || 0) + '"><input class="inp" id="edMaxD" type="number" min="0" step="any" value="' + esc(m.max || 0) + '"></div>' + lab('الشعار') + imgField('edImg', safeUrl(m.img), 200) + lab('صورة الباركود QR') + imgField('edQr', safeUrl(m.qr), 520);
+  } else return;
+  openModal('<div class="modal-content"><h3>' + title + '</h3>' + h + '<div class="row" style="margin-top:14px;"><button class="btn" data-act="edsave" data-id="' + esc(key) + '">حفظ</button><button class="btn btn-outline" data-act="closemodal">إلغاء</button></div></div>');
+  toggleKindBox();
+}
+
+/* ---- طرق الدفع ---- */
+function admMethods(){
+  return '<div class="box"><h4>➕ إضافة طريقة دفع</h4><div class="row"><input class="inp" id="pmName" placeholder="الاسم (مثلاً: شام كاش، USDT، سيرياتيل كاش)"></div>' +
+    '<div class="row"><input class="inp" id="pmWallet" placeholder="رقم المحفظة / الحساب"></div><div class="row"><textarea class="inp" id="pmNote" maxlength="300" placeholder="ملاحظة للزبون (اختياري): الشبكة، الحد الأدنى، تعليمات..."></textarea></div>' +
+    lab('عملة الدفع (الزبون بيكتب المبلغ بها وبيشوف المعادل بالدولار)') + '<select class="inp" id="pmCur">' + curOpts('USD') + '</select>' + lab('الحد الأدنى / الأعلى للإيداع (بعملة الطريقة، 0 = بلا حد)') + '<div class="row"><input class="inp" id="pmMin" type="number" min="0" step="any" placeholder="أدنى" value="0"><input class="inp" id="pmMax" type="number" min="0" step="any" placeholder="أعلى" value="0"></div>' + lab('الشعار') + imgField('pmLogo', '', 200) + lab('صورة الباركود QR') + imgField('pmQr', '', 520) + '<button class="btn" data-act="addmethod">إضافة طريقة دفع</button></div>' +
+    (D.methods.map(function(m){
+      return '<div class="box' + (isOn(m) ? '' : ' off') + '"><div class="row">' + thumb(m.img) + '<b style="color:var(--gold);">' + esc(m.name) + (isOn(m) ? '' : ' (موقوفة)') + '</b>' + btns('method', m) + '</div>' +
+        '<div class="small" style="margin-top:6px;direction:ltr;text-align:right;">' + esc(m.wallet || '') + (safeUrl(m.qr) ? ' 🔳 QR' : '') + ' — ' + mCur(m) + (Number(m.min) > 0 ? ' — أدنى ' + esc(m.min) : '') + (Number(m.max) > 0 ? ' — أعلى ' + esc(m.max) : '') + '</div></div>';
+    }).join('') || '<div class="empty">ما في طرق دفع لسا</div>');
+}
+
+/* ---- الإعلانات والواتساب ---- */
+function admSite(){
+  var s = SITE || {};
+  return '<div class="box"><h4>🖼️ خلفية المتجر</h4><div class="small">بتظهر ورا كل صفحات المتجر (بنخفّف إضاءتها حتى يبقى الكلام واضح).</div>' + imgField('stBg', safeUrl(s.bgImg), 900) + '</div>' +
+    '<div class="box"><h4>📢 شريط متحرك أعلى المتجر</h4><div class="small">بيظهر لكل الزباين تحت الشريط العلوي.</div>' +
+    lab('النص (فاضي = إخفاء الشريط)') + '<input class="inp" id="stTicker" maxlength="200" value="' + esc(s.tickerText || '') + '">' + lab('رابط عند الضغط (اختياري، يبدأ بـ https://)') + '<input class="inp" id="stTickerLink" style="direction:ltr;" value="' + esc(s.tickerLink || '') + '"></div>' +
+    '<div class="box"><h4>🔔 نافذة بتطلع أول ما حدا يفتح المتجر</h4>' +
+    '<label class="chk"><input type="checkbox" id="stPopOn"' + (s.popupOn ? ' checked' : '') + '> تفعيل النافذة (بتظهر مرة بكل فتحة، حتى قبل تسجيل الدخول)</label>' +
+    lab('العنوان') + '<input class="inp" id="stPopTitle" maxlength="80" value="' + esc(s.popupTitle || '') + '">' + lab('النص') + '<textarea class="inp" id="stPopText" maxlength="600">' + esc(s.popupText || '') + '</textarea>' +
+    lab('نص الزر') + '<input class="inp" id="stPopBtn" maxlength="30" value="' + esc(s.popupBtn || '') + '" placeholder="انضم لمجموعة الواتساب">' + lab('رابط الزر') + '<input class="inp" id="stPopLink" style="direction:ltr;" value="' + esc(s.popupLink || '') + '"></div>' +
+    '<div class="box"><h4>🔗 أزرار التواصل بالقائمة الجانبية</h4><div class="small" style="line-height:1.8;">الواتساب والتلجرام بيفتحوا للزبون رسالة جاهزة فيها اسمه ورقمه وايميله. الباقي بيفتح الرابط.</div>' +
+    lab('💬 رقم الواتساب (مع رمز الدولة بدون +)') + '<input class="inp" id="stWa" type="tel" style="direction:ltr;" value="' + esc(s.waNumber || ADMIN_WA) + '">' +
+    lab('✈️ يوزر تلجرام (بدون @)') + '<input class="inp" id="stTg" style="direction:ltr;" value="' + esc(s.tgUser || '') + '">' +
+    lab('📘 رابط فيسبوك') + '<input class="inp" id="stFb" style="direction:ltr;" value="' + esc(s.facebook || '') + '">' +
+    lab('🎵 رابط تيك توك') + '<input class="inp" id="stTt" style="direction:ltr;" value="' + esc(s.tiktok || '') + '">' +
+    lab('📸 رابط انستغرام') + '<input class="inp" id="stIg" style="direction:ltr;" value="' + esc(s.instagram || '') + '"></div>' +
+    '<div class="box"><h4>✈️ إشعارات تلجرام المجانية للطلبات</h4><div class="small" style="line-height:1.8;">بعد ما تجهّز الوسيط (Cloudflare Worker حسب الشرح) الصق رابطه هون. التوكن ما بينحط هون أبداً.</div>' +
+    lab('رابط الوسيط (Worker URL)') + '<input class="inp" id="stNotify" style="direction:ltr;" value="' + esc(s.notifyUrl || '') + '" placeholder="https://zoon-notify.xxxx.workers.dev">' +
+    '<button class="btn btn-outline" style="margin-top:8px;" data-act="testtg">📨 إرسال إشعار تجريبي لتلجرام</button></div>' +
+    '<button class="btn" data-act="savesite">💾 حفظ</button><button class="btn btn-outline" style="margin-top:8px;" data-act="testpop">👁 تجربة النافذة (بعد الحفظ)</button>';
+}
+function admCodes(){
+  return '<div class="box"><h4>💰 إضافة رصيد مباشر (بعد ما يدفع كاش)</h4><div class="row"><input class="inp" id="abPhone" type="tel" placeholder="رقم هاتف الزبون"><input class="inp" id="abValue" type="number" step="0.01" min="0" placeholder="المبلغ $"></div><button class="btn" data-act="addbal">إضافة الرصيد</button></div>' +
+    '<div class="box"><h4>🎟️ إنشاء كود شحن (بتكتبه انت)</h4><div class="small" style="margin-bottom:8px;">اكتب الكود اللي بدك ياه (حروف انجليزية وأرقام وشرطة). رقم الهاتف اختياري: إذا تركته فاضي أي حساب بيقدر يفعّله مرة وحدة.</div>' +
+    '<div class="row"><input class="inp" id="gcCode" placeholder="الكود مثلاً ZOON-GOLD50" style="direction:ltr;" maxlength="30" autocomplete="off"><input class="inp" id="gcValue" type="number" step="0.01" min="0" placeholder="القيمة $"></div>' +
+    '<div class="row"><input class="inp" id="gcPhone" type="tel" placeholder="رقم هاتف الزبون (اختياري)"></div><button class="btn" data-act="gencode">إنشاء الكود</button></div>' +
+    (D.codes.length ? '<div class="tbl-wrap"><table><tr><th>الكود</th><th>الرقم</th><th>القيمة</th><th>الحالة</th></tr>' + D.codes.map(function(c){
+      return '<tr><td><b style="direction:ltr;display:inline-block;">' + esc(c.code) + '</b></td><td>' + (c.phone ? esc(c.phone) : '<span class="small">أي حساب</span>') + '</td><td>' + usd(c.value) + '</td><td>' + (c.used ? '<span class="status rejected">مستخدم</span>' : '<span class="status approved">فعّال</span>') + '</td></tr>';
+    }).join('') + '</table></div>' : '<div class="empty">ما في أكواد</div>');
+}
+var UNIT_MS = { d: 864e5, w: 6048e5, m: 2592e6, y: 31536e6 };
+function admContests(){
+  var list = D.contests.map(function(c){
+    var draw = c.type === 'draw', open = cOpen(c), done = c.status === 'ended';
+    return '<div class="box"><h4>' + (draw ? '🎁 ' : '🏆 ') + esc(c.title) + ' <span class="status ' + (done ? 'rejected' : (open ? 'approved' : 'pending')) + '">' + (done ? 'انتهت' : (open ? 'شغّالة' : 'انتهى الوقت')) + '</span></h4>' +
+      '<div class="small" style="line-height:2;">' + (draw ? 'سحب إلكتروني — الرسم ' + usd(c.fee) : 'مسابقة أعلى صرف') + ' — 👥 ' + esc(c.joined) + '/' + esc(c.max) + ' — 🏅 فائزين: ' + esc(c.winners) + '<br>🎁 ' + esc(c.prize) + '<br>⏳ ' + (done ? 'أُنهيت' : 'تنتهي ' + fmtDT(c.endAt)) +
+      (done && c.winnerNames ? '<br>🏆 ' + c.winnerNames.map(esc).join('، ') : '') + '</div>' +
+      '<div class="act-row" style="margin-top:8px;flex-wrap:wrap;"><button class="btn btn-outline btn-sm" data-act="ctview" data-id="' + esc(c.id) + '">👥 المشتركين</button>' +
+      (done ? '' : '<button class="btn btn-ok btn-sm" data-act="ctend" data-id="' + esc(c.id) + '">' + (draw ? '🎲 سحب الفائزين' : '🏁 إعلان الفائزين') + '</button>') +
+      '<button class="btn btn-danger btn-sm" data-act="ctdel" data-id="' + esc(c.id) + '">🗑</button></div></div>';
+  }).join('') || '<div class="empty">ما في مسابقات</div>';
+  return '<div class="box"><h4>➕ مسابقة / سحب جديد</h4>' +
+    '<select class="inp" id="ctType"><option value="spend">🏆 مسابقة: الفائز الأكثر صرفاً للرصيد (مجانية)</option><option value="draw">🎁 سحب إلكتروني (اشتراك مدفوع)</option></select>' +
+    lab('العنوان') + '<input class="inp" id="ctTitle" maxlength="80" placeholder="مثلاً: مسابقة الشهر">' +
+    lab('الجائزة (وصف)') + '<textarea class="inp" id="ctPrize" maxlength="300" placeholder="مثلاً: 100$ رصيد لكل فائز"></textarea>' +
+    lab('عدد الفائزين / أقصى عدد مشتركين') + '<div class="row"><input class="inp" id="ctWin" type="number" min="1" value="1"><input class="inp" id="ctMax" type="number" min="1" value="100"></div>' +
+    lab('مدة المسابقة') + '<div class="row"><input class="inp" id="ctDur" type="number" min="1" step="any" value="7"><select class="inp" id="ctUnit"><option value="d">يوم</option><option value="w">أسبوع</option><option value="m">شهر</option><option value="y">سنة</option></select></div>' +
+    '<div id="ctFeeBox" style="display:none;">' + lab('رسم الاشتراك بالدولار (بينخصم من رصيد المشترك)') + '<input class="inp" id="ctFee" type="number" step="0.01" min="0" value="1"></div>' +
+    '<button class="btn" style="margin-top:10px;" data-act="ctadd">🚀 إطلاق</button><div class="meta">المسابقة: بتشوف كل مشترك (ايميل + رقم) وقديش صرف من لحظة اشتراكه، وبتضغط «إعلان الفائزين» ليختار الأعلى صرفاً. السحب الإلكتروني: بيختار الفائزين عشوائياً بزر واحد.</div></div>' + list;
+}
+function rndInt(n){
+  try {
+    var a = new Uint32Array(1), lim = Math.floor(4294967296 / n) * n;
+    do { window.crypto.getRandomValues(a); } while(a[0] >= lim);
+    return a[0] % n;
+  } catch(e){ return Math.floor(Math.random() * n); }
+}
+function entryRows(cid){
+  return db.collection('contests').doc(cid).collection('entries').get().then(function(sn){
+    return sn.docs.map(function(d){
+      var e = d.data({ serverTimestamps: 'estimate' }), u = byId(D.users, e.uid);
+      e.spent = u ? Math.max(0, Number(u.totalOut) - Number(e.base)) : 0; return e;
+    });
+  });
+}
+function entriesTable(c, rows){
+  var spend = c.type !== 'draw';
+  return '<div class="tbl-wrap"><table><tr><th>#</th><th>الاسم</th><th>الهاتف</th><th>الايميل</th>' + (spend ? '<th>صرف من الاشتراك</th>' : '<th>تاريخ الاشتراك</th>') + '</tr>' +
+    rows.map(function(e, i){ return '<tr><td>' + (i + 1) + '</td><td>' + esc(e.name) + '</td><td>' + esc(e.phone) + '</td><td><span style="direction:ltr;display:inline-block;">' + esc(e.email) + '</span></td><td>' + (spend ? usd(e.spent) : fmtDate(e.joinedAt)) + '</td></tr>'; }).join('') + '</table></div>';
+}
+
+function admRates(){
+  return '<div class="box"><h4>💱 تعديل الأسعار (لكل 1 دولار)</h4>' +
+    ['SYP', 'TRY'].map(function(c){
+      return '<div class="row"><span>' + CUR[c][1] + ' ' + c + '</span><input class="inp" data-rate="' + c + '" type="number" step="any" min="0" value="' + rate(c) + '"></div>';
+    }).join('') +
+    '<button class="btn btn-outline" style="margin-bottom:8px;" data-act="livetry">🌐 جلب سعر الليرة التركية الحالي من الانترنت</button>' +
+    '<button class="btn" data-act="saverates">حفظ الأسعار للزباين</button>' +
+    '<div class="meta">الليرة السورية بتتعدّل يدوي دايماً (سعر السوق غير الرسمي). الأسعار هون هي اللي بيشوفها كل الزباين.</div></div>';
+}
+function admSettings(){
+  return '<div class="box"><h4>👤 حسابك</h4><div class="small" style="line-height:2;">' + esc(ME.email) + '<br>UID: <span style="direction:ltr; display:inline-block;">' + esc(ME.uid) + '</span></div></div>' +
+    '<div class="box"><h4>🔔 إشعارات الطلبات</h4><button class="btn" data-act="enablenotif">تفعيل الصوت والإشعارات (وتجربة)</button><div class="meta">لما يجي طلب جديد: صوت واهتزاز وتنبيه، بس والصفحة مفتوحة (حتى لو بالخلفية). اضغط الزر مرة بكل مرة بتفتح فيها المتجر.</div></div>' +
+    '<div class="box"><h4>💾 نسخة احتياطية</h4><button class="btn btn-outline" data-act="export">تنزيل نسخة احتياطية (JSON)</button></div>' +
+    '<div class="box"><h4>🚪 خروج</h4><button class="btn btn-danger" data-act="logout">تسجيل خروج من الحساب</button></div>';
+}
+function findUserByPhone(p){
+  p = String(p || '').replace(/[^0-9]/g, ''); if(!p) return null;
+  return D.users.filter(function(u){ return u.phone === p; })[0] || null;
+}
+
+/* ================= معالجة الأحداث ================= */
+var ADMIN_ACTS = { userfreeze:1, ctadd:1, ctview:1, ctend:1, ctdel:1, ordfind:1, testtg:1, admintab:1, userbal:1, deluser:1, ordok:1, ordno:1, addgame:1, delgame:1, addcat:1, delcat:1, addaddon:1, editaddon:1, deladdon:1, gencode:1, addbal:1, saverates:1, livetry:1, export:1, seed:1, enablenotif:1, depok:1, depno:1, edit:1, edsave:1, toggle:1, addmethod:1, delmethod:1, savesite:1, addsection:1, delsection:1, testpop:1, imgdel:1 };
+var A = {
+  nav: function(id){ nav(id); },
+  menu: function(id){ toggleMenu(id === '1'); },
+  showpage: function(id){ showPage(id); pushView(); },
+  login: login, register: register, logout: logout,
+  redeem: redeem, reqbal: reqBal,
+  section: function(id){ currentSection = id; renderGames(); window.scrollTo(0, 0); pushView(); },
+  secback: function(){ if(goBack()) return; currentSection = null; renderGames(); window.scrollTo(0, 0); },
+  gameback: function(){ if(goBack()) return; var keep = currentSection; nav('home'); currentSection = keep; renderGames(); },
+  game: openGame, cat: function(id){ loadAddons(id); pushView(); }, buy: openOrderModal, confirm: placeOrder,
+  closemodal: closeModal, social: social, invoice: openInvoice, invdl: invDownload, cjoin: joinContest,
+  ofilter: function(id){ ordFilter = id; drawOrders(); },
+  setcur: setCur,
+  cvswap: function(){ var f = $('cvFrom'), t = $('cvTo'), x = f.value; f.value = t.value; t.value = x; renderConverter(); },
+  admlogin: admLogin, admexit: admExit, enablenotif: enableNotif,
+  admintab: function(id){ adminTab = id; renderAdmin(); },
+  ordok: function(id){
+    var o = byId(D.orders, id); if(!o || o.status !== 'pending') return;
+    db.collection('orders').doc(id).update({ status: 'approved' }).then(function(){ return adminDone('✅ تم'); }).catch(adminErr);
+  },
+  ordno: function(id){
+    var o = byId(D.orders, id); if(!o || o.status !== 'pending') return;
+    var reason = prompt('سبب رفض الطلب (رح يظهر للزبون، والمبلغ بيرجع لرصيده):', ''); if(reason === null) return;
+    reason = reason.trim().slice(0, 200); if(!reason) return toast('اكتب سبب الرفض');
+    var oRef = db.collection('orders').doc(id), uRef = db.collection('users').doc(o.userId);
+    db.runTransaction(function(t){
+      return Promise.all([t.get(oRef), t.get(uRef)]).then(function(r){
+        var od = r[0].data();
+        if(!od || od.status !== 'pending') throw new Error('الطلب مو معلّق');
+        t.update(oRef, { status: 'rejected', reason: reason });
+        if(r[1].exists){ var u = r[1].data(); t.update(uRef, { balance: u.balance + od.price, totalOut: Math.max(0, u.totalOut - od.price) }); }
+      });
+    }).then(function(){ return adminDone('تم الرفض وإرجاع الرصيد'); }).catch(adminErr);
+  },
+  depok: function(id){
+    var d = byId(D.deposits, id); if(!d || d.status !== 'pending') return;
+    var v = prompt('المبلغ بالدولار اللي رح ينضاف لرصيد ' + d.userName + ' (عدّله إذا لازم):', (Number(d.amount) / 100).toFixed(2)); if(v === null) return;
+    var c = toCents(v); if(!(c > 0)) return toast('مبلغ غير صحيح');
+    var dRef = db.collection('deposits').doc(id), uRef = db.collection('users').doc(d.userId);
+    db.runTransaction(function(t){
+      return Promise.all([t.get(dRef), t.get(uRef)]).then(function(r){
+        if(!r[0].exists || r[0].data().status !== 'pending') throw new Error('الطلب مو معلّق');
+        if(!r[1].exists) throw new Error('الزبون غير موجود');
+        t.update(dRef, { status: 'approved', credited: c });
+        t.update(uRef, { balance: FV.increment(c), totalIn: FV.increment(c) });
+      });
+    }).then(function(){ return adminDone('✅ انضاف الرصيد لـ ' + d.userName); }).catch(adminErr);
+  },
+  depno: function(id){
+    var d = byId(D.deposits, id); if(!d || d.status !== 'pending') return;
+    var reason = prompt('سبب رفض طلب التعبئة (رح يظهر للزبون):', ''); if(reason === null) return;
+    reason = reason.trim().slice(0, 200); if(!reason) return toast('اكتب سبب الرفض');
+    db.collection('deposits').doc(id).update({ status: 'rejected', reason: reason }).then(function(){ return adminDone('تم الرفض'); }).catch(adminErr);
+  },
+  userbal: function(id){
+    var u = byId(D.users, id); if(!u) return;
+    var c = toCents(prompt('المبلغ بالدولار لإضافته لرصيد ' + u.name + ' (اكتب رقم سالب للخصم):', ''));
+    if(!c || isNaN(c)) return;
+    if(u.balance + c < 0) return toast('الرصيد ما بيكفي للخصم');
+    var upd = { balance: FV.increment(c) }; if(c > 0) upd.totalIn = FV.increment(c);
+    db.collection('users').doc(id).update(upd).then(function(){ return adminDone('✅ تم تعديل رصيد ' + u.name); }).catch(adminErr);
+  },
+  deluser: function(id){
+    var u = byId(D.users, id); if(!u) return;
+    if(ME && id === ME.uid) return toast('ما بتقدر تحذف حسابك وانت داخل فيه');
+    if(!confirm('حذف بيانات ' + u.name + ' من المتجر؟ (حساب الدخول نفسه بيضل موجود بـ Firebase Authentication)')) return;
+    db.collection('users').doc(id).delete().then(function(){ return adminDone('تم الحذف'); }).catch(adminErr);
+  },
+  addgame: function(){
+    var n = $('agName').value.trim(); if(!n) return toast('اكتب اسم اللعبة');
+    var img = IMGS.agImg || placeholderImg(n, '#b8860b', '#1a1a1a');
+    db.collection('games').add({ name: n, img: img, servers: parseServers($('agServers').value), section: val('agSection'), active: true }).then(function(){ return adminDone('✅ انضافت اللعبة', true); }).catch(adminErr);
+  },
+  addsection: function(){
+    var n = val('asName'); if(!n) return toast('اكتب اسم المصنّف');
+    db.collection('sections').add({ name: n.slice(0, 60), img: IMGS.asImg || '', order: Date.now() }).then(function(){ return adminDone('✅ انضاف المصنّف', true); }).catch(adminErr);
+  },
+  delsection: function(id){
+    if(!confirm('حذف المصنّف؟ الألعاب اللي فيه ما بتنحذف، بترجع بدون مصنّف.')) return;
+    var b = db.batch();
+    D.games.forEach(function(g){ if(g.section === id) b.update(db.collection('games').doc(g.id), { section: '' }); });
+    b.delete(db.collection('sections').doc(id));
+    b.commit().then(function(){ return adminDone('تم الحذف', true); }).catch(adminErr);
+  },
+  delgame: function(id){
+    if(!confirm('حذف اللعبة مع أقسامها وباقاتها؟')) return;
+    var cats = D.categories.filter(function(c){ return c.game === id; }).map(function(c){ return c.id; });
+    var b = db.batch();
+    D.addons.forEach(function(a){ if(cats.indexOf(a.category) > -1) b.delete(db.collection('addons').doc(a.id)); });
+    cats.forEach(function(cid){ b.delete(db.collection('categories').doc(cid)); });
+    b.delete(db.collection('games').doc(id));
+    b.commit().then(function(){ return adminDone('تم الحذف', true); }).catch(adminErr);
+  },
+  addcat: function(){
+    var g = $('acGame').value, n = $('acName').value.trim();
+    if(!g) return toast('أضف لعبة أول'); if(!n) return toast('اكتب اسم القسم');
+    db.collection('categories').add({ game: g, name: n, note: val('acNote').slice(0, 200), noteColor: colorOk($('acNoteColor').value) ? $('acNoteColor').value : '', img: IMGS.acImg || '', active: true }).then(function(){ return adminDone('✅ انضاف القسم', true); }).catch(adminErr);
+  },
+  delcat: function(id){
+    if(!confirm('حذف القسم مع باقاته؟')) return;
+    var b = db.batch();
+    D.addons.forEach(function(a){ if(a.category === id) b.delete(db.collection('addons').doc(a.id)); });
+    b.delete(db.collection('categories').doc(id));
+    b.commit().then(function(){ return adminDone('تم الحذف', true); }).catch(adminErr);
+  },
+  addaddon: function(){
+    var c = $('aaCat').value, n = $('aaName').value.trim(), qty = $('aaKind').value === 'qty';
+    if(!c) return toast('أضف قسم أول'); if(!n) return toast('اكتب اسم الباقة');
+    var t = $('aaIdType').value; if(!ID_TYPES[t]) t = 'id';
+    var base = { category: c, name: n, idType: t, note: $('aaNote').value.trim().slice(0, 200), noteColor: colorOk($('aaNoteColor').value) ? $('aaNoteColor').value : '', img: IMGS.aaImg || '', active: true, kind: qty ? 'qty' : 'fixed' };
+    if(qty){
+      base.min = Math.max(1, parseInt($('aaMin').value, 10) || 1);
+      base.max = Math.max(base.min, parseInt($('aaMax').value, 10) || 100000);
+      base.unit = $('aaUnit').value.trim().slice(0, 20) || 'وحدة';
+    }
+    var b = db.batch(), cnt = 0;
+    document.querySelectorAll('[data-sp]').forEach(function(inp){
+      var v = parseFloat(inp.value); if(!(v > 0)) return;
+      var d = Object.assign({}, base);
+      if(qty){ var per = Math.round(v); if(per < 1) return; d.perUsd = per; d.price = Math.max(1, Math.ceil(100 / per)); }
+      else d.price = toCents(v);
+      if(!(d.price > 0)) return;
+      if(inp.dataset.sp) d.server = inp.dataset.sp;
+      b.set(db.collection('addons').doc(), d); cnt++;
+    });
+    if(!cnt) return toast(qty ? 'اكتب عدد الوحدات بـ 1$' : 'اكتب السعر');
+    b.commit().then(function(){ return adminDone('✅ انضافت الباقة (' + cnt + ')', true); }).catch(adminErr);
+  },
+  deladdon: function(id){ if(!confirm('حذف الباقة؟')) return; db.collection('addons').doc(id).delete().then(function(){ return adminDone('', true); }).catch(adminErr); },
+  edit: function(key){ openEditor(key); },
+  imgdel: function(key){ IMGS[key] = ''; var pv = $('pv-' + key); if(pv){ pv.style.display = 'none'; } toast('بتنحذف الصورة لما تضغط حفظ'); },
+  edsave: function(key){
+    var p = key.split(':'), kind = p[0], id = p[1], upd = {}, col = '', name = val('edName');
+    if(!name) return toast('اكتب الاسم');
+    upd.name = name;
+    if(kind === 'game'){ col = 'games'; upd.servers = parseServers(val('edServers')); upd.section = val('edSection'); }
+    else if(kind === 'section'){ col = 'sections'; }
+    else if(kind === 'cat'){ col = 'categories'; upd.note = val('edNote').slice(0, 200); upd.noteColor = colorOk($('edNoteColor').value) ? $('edNoteColor').value : ''; }
+    else if(kind === 'method'){ col = 'payMethods'; upd.wallet = val('edWallet').slice(0, 120); upd.note = val('edNote').slice(0, 300); upd.cur = CUR[$('edCur').value] ? $('edCur').value : 'USD'; upd.min = Math.max(0, parseFloat($('edMinD').value) || 0); upd.max = Math.max(0, parseFloat($('edMaxD').value) || 0); if(upd.max && upd.max < upd.min) return toast('الحد الأعلى لازم يكون أكبر من الأدنى'); if(IMGS.edQr !== undefined) upd.qr = IMGS.edQr; }
+    else if(kind === 'addon'){
+      col = 'addons';
+      upd.idType = ID_TYPES[$('edIdType').value] ? $('edIdType').value : 'id'; upd.note = val('edNote').slice(0, 200); upd.noteColor = colorOk($('edNoteColor').value) ? $('edNoteColor').value : ''; upd.server = $('edServer').value;
+      if($('edKind').value === 'qty'){
+        var per = Math.round(parseFloat($('edPer').value)); if(!(per >= 1)) return toast('اكتب كم وحدة بـ 1$');
+        var mn = Math.max(1, parseInt($('edMin').value, 10) || 1), mx = Math.max(mn, parseInt($('edMax').value, 10) || 100000);
+        upd.kind = 'qty'; upd.perUsd = per; upd.min = mn; upd.max = mx; upd.unit = val('edUnit').slice(0, 20) || 'وحدة'; upd.price = Math.max(1, Math.ceil(100 / per)); upd.oldPrice = 0;
+      } else {
+        var pr = toCents($('edPrice').value); if(!(pr > 0)) return toast('السعر لازم يكون أكبر من صفر');
+        upd.kind = 'fixed'; upd.price = pr; var op = toCents(val('edOld')); upd.oldPrice = (op > pr) ? op : 0;
+      }
+    } else return;
+    if(IMGS.edImg !== undefined) upd.img = IMGS.edImg;
+    db.collection(col).doc(id).update(upd).then(function(){ closeModal(); return adminDone('✅ تم التعديل', true); }).catch(adminErr);
+  },
+  toggle: function(key){
+    var p = key.split(':'), kind = p[0], id = p[1], b = db.batch(), on, msg;
+    if(kind === 'game'){
+      var g = byId(D.games, id); if(!g) return; on = !isOn(g);
+      b.update(db.collection('games').doc(id), { active: on });
+      D.categories.filter(function(c){ return c.game === id; }).forEach(function(c){
+        b.update(db.collection('categories').doc(c.id), { active: on });
+        D.addons.filter(function(a){ return a.category === c.id; }).forEach(function(a){ b.update(db.collection('addons').doc(a.id), { active: on }); });
+      });
+    } else if(kind === 'cat'){
+      var c0 = byId(D.categories, id); if(!c0) return; on = !isOn(c0);
+      b.update(db.collection('categories').doc(id), { active: on });
+      D.addons.filter(function(a){ return a.category === id; }).forEach(function(a){ b.update(db.collection('addons').doc(a.id), { active: on }); });
+    } else if(kind === 'addon'){
+      var a0 = byId(D.addons, id); if(!a0) return; on = !isOn(a0);
+      b.update(db.collection('addons').doc(id), { active: on });
+    } else if(kind === 'method'){
+      var m0 = byId(D.methods, id); if(!m0) return; on = !isOn(m0);
+      b.update(db.collection('payMethods').doc(id), { active: on });
+    } else return;
+    b.commit().then(function(){ return adminDone(on ? '▶ تم التشغيل' : '⏸ تم الإيقاف، ما عاد بيظهر للزباين', true); }).catch(adminErr);
+  },
+  addmethod: function(){
+    var n = val('pmName'); if(!n) return toast('اكتب اسم طريقة الدفع');
+    var pmin = parseFloat($('pmMin').value) || 0, pmax = parseFloat($('pmMax').value) || 0; if(pmax && pmax < pmin) return toast('الحد الأعلى لازم يكون أكبر من الأدنى');
+    db.collection('payMethods').add({ name: n, wallet: val('pmWallet').slice(0, 120), note: val('pmNote').slice(0, 300), img: IMGS.pmLogo || '', qr: IMGS.pmQr || '', cur: CUR[$('pmCur').value] ? $('pmCur').value : 'USD', min: Math.max(0, parseFloat($('pmMin').value) || 0), max: Math.max(0, parseFloat($('pmMax').value) || 0), active: true, createdAt: FV.serverTimestamp() })
+      .then(function(){ return adminDone('✅ انضافت طريقة الدفع', true); }).catch(adminErr);
+  },
+  delmethod: function(id){ if(!confirm('حذف طريقة الدفع؟')) return; db.collection('payMethods').doc(id).delete().then(function(){ return adminDone('تم الحذف', true); }).catch(adminErr); },
+  savesite: function(){
+    var o = { tickerText: val('stTicker').slice(0, 200), tickerLink: safeUrl(val('stTickerLink')), popupOn: !!$('stPopOn').checked, popupTitle: val('stPopTitle').slice(0, 80), popupText: val('stPopText').slice(0, 600), popupBtn: val('stPopBtn').slice(0, 30), popupLink: safeUrl(val('stPopLink')), waNumber: val('stWa').replace(/\D/g, ''), tgUser: val('stTg').replace(/^.*t\.me\//i, '').replace(/^@/, '').replace(/[^A-Za-z0-9_]/g, '').slice(0, 40), facebook: safeUrl(val('stFb')), tiktok: safeUrl(val('stTt')), instagram: safeUrl(val('stIg')), notifyUrl: safeUrl(val('stNotify')), bgImg: IMGS.stBg !== undefined ? IMGS.stBg : safeUrl((SITE || {}).bgImg), updatedAt: FV.serverTimestamp() };
+    db.collection('settings').doc('site').set(o).then(function(){ return loadCatalog(); }).then(function(){ toast('✅ انحفظت الإعدادات'); renderAdmin(); }).catch(adminErr);
+  },
+  testpop: function(){ if(!(SITE.popupTitle || SITE.popupText)) return toast('اكتب عنوان أو نص واحفظ أول'); showPopup(); },
+  server: function(id){ curServer = id; drawServers(); if(currentCat) loadAddons(currentCat); },
+  paymethod: openPay, depsend: sendDeposit, copytxt: copyTxt,
+  gencode: function(){
+    var code = val('gcCode').toUpperCase().replace(/\s+/g, ''), v = toCents($('gcValue').value), ph = $('gcPhone').value.replace(/[^0-9]/g, '');
+    if(!/^[A-Z0-9-]{4,30}$/.test(code)) return toast('الكود: 4-30 خانة، حروف انجليزية وأرقام وشرطة فقط');
+    if(!(v > 0)) return toast('اكتب قيمة صحيحة');
+    if(ph && !findUserByPhone(ph)) return toast('ما في زبون مسجّل بهاد الرقم (اتركه فاضي ليكون الكود لأي حساب)');
+    var ref = db.collection('codes').doc(code);
+    ref.get().then(function(d){
+      if(d.exists) throw new Error('هاد الكود موجود من قبل، اختار غيره');
+      return ref.set({ code: code, value: v, phone: ph, used: false, createdAt: FV.serverTimestamp() });
+    }).then(function(){ return adminDone('✅ انعمل الكود: ' + code, false); }).catch(function(e){ if(e && e.message && !e.code) toast('❌ ' + e.message, 5000); else adminErr(e); });
+  },
+  userfreeze: function(id){
+    var u = byId(D.users, id); if(!u) return;
+    if(ME && id === ME.uid) return toast('ما بتقدر تجمّد حسابك');
+    var on = !u.frozen;
+    if(!confirm((on ? 'تجميد حساب ' : 'فك تجميد حساب ') + u.name + '؟')) return;
+    db.collection('users').doc(id).update({ frozen: on }).then(function(){ return adminDone(on ? '🧊 انجمّد الحساب' : '🔓 انفك التجميد'); }).catch(adminErr);
+  },
+  ordfind: function(){
+    var q = val('ordSearch'); if(!q) return;
+    var ids = [q, q.toUpperCase()].filter(function(x, i, a){ return /^[A-Za-z0-9]{3,40}$/.test(x) && a.indexOf(x) === i; });
+    if(!ids.length) return toast('اكتب رقم طلب صحيح');
+    Promise.all(ids.map(function(i){ return db.collection('orders').doc(i).get(); })).then(function(r){
+      var d = r.filter(function(x){ return x.exists; })[0];
+      if(!d) return toast('ما لقيت طلب بهاد الرقم');
+      if(!byId(D.orders, d.id)) D.orders.unshift(toObj(d));
+      renderOrdersTable();
+    }).catch(adminErr);
+  },
+  testtg: function(){
+    var u = safeUrl(val('stNotify')) || safeUrl(SITE.notifyUrl); if(!u) return toast('الصق رابط الوسيط أول');
+    toast('جاري الإرسال...');
+    auth.currentUser.getIdToken().then(function(t){ return fetch(u, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ type: 'test', token: t }) }); })
+      .then(function(r){ return r.text(); }).then(function(tx){ toast(tx === 'ok' ? '✅ انرسل إشعار تجريبي، شوف تلجرام' : '⚠️ ' + String(tx).slice(0, 140), 7000); })
+      .catch(function(){ toast('❌ تعذر الاتصال بالوسيط، تأكد من الرابط', 6000); });
+  },
+  ctadd: function(){
+    var type = $('ctType').value === 'draw' ? 'draw' : 'spend', title = val('ctTitle'), prize = val('ctPrize');
+    var win = parseInt($('ctWin').value, 10), max = parseInt($('ctMax').value, 10), dur = parseFloat($('ctDur').value), unit = UNIT_MS[$('ctUnit').value] ? $('ctUnit').value : 'd';
+    var fee = type === 'draw' ? toCents($('ctFee').value) : 0;
+    if(!title) return toast('اكتب عنوان المسابقة'); if(!prize) return toast('اكتب الجائزة');
+    if(!(win >= 1)) return toast('عدد الفائزين لازم 1 عالأقل');
+    if(!(max >= win)) return toast('أقصى عدد مشتركين لازم يكون ≥ عدد الفائزين');
+    if(!(dur > 0)) return toast('اكتب مدة صحيحة');
+    if(type === 'draw' && !(fee > 0)) return toast('اكتب رسم اشتراك أكبر من صفر');
+    var endMs = Math.round(Date.now() + dur * UNIT_MS[unit]);
+    db.collection('contests').add({ type: type, title: title.slice(0, 80), prize: prize.slice(0, 300), winners: win, max: max, fee: fee, joined: 0, status: 'open', createdAt: FV.serverTimestamp(), endAt: firebase.firestore.Timestamp.fromMillis(endMs) })
+      .then(function(){ return adminDone('✅ انطلقت المسابقة'); }).catch(adminErr);
+  },
+  ctview: function(id){
+    var c = byId(D.contests, id); if(!c) return;
+    entryRows(id).then(function(rows){
+      if(c.type === 'draw') rows.sort(function(a, b){ return ms(a.joinedAt) - ms(b.joinedAt); }); else rows.sort(function(a, b){ return b.spent - a.spent; });
+      openModal('<div class="modal-content wide-modal"><h3>👥 مشتركي: ' + esc(c.title) + ' (' + rows.length + ')</h3>' + (rows.length ? entriesTable(c, rows) : '<div class="empty">ما في مشتركين لسا</div>') + '<button class="btn btn-outline" style="margin-top:12px;" data-act="closemodal">إغلاق</button></div>');
+    }).catch(adminErr);
+  },
+  ctend: function(id){
+    var c = byId(D.contests, id); if(!c || c.status !== 'open') return;
+    entryRows(id).then(function(rows){
+      var draw = c.type === 'draw', pool = draw ? rows.slice() : rows.filter(function(r){ return r.spent > 0; }), win = [];
+      if(draw){ for(var i = pool.length - 1; i > 0; i--){ var j = rndInt(i + 1), t = pool[i]; pool[i] = pool[j]; pool[j] = t; } }
+      else pool.sort(function(a, b){ return b.spent - a.spent; });
+      win = pool.slice(0, c.winners);
+      var msg = win.length ? 'الفائزون:\n' + win.map(function(w, i){ return (i + 1) + '. ' + w.name + (draw ? '' : ' (' + usd(w.spent) + ')'); }).join('\n') + '\n\nتأكيد إنهاء المسابقة؟' : 'ما في مشتركين مؤهلين. إنهاء المسابقة بدون فائزين؟';
+      if(!confirm(msg)) return;
+      return db.collection('contests').doc(id).update({ status: 'ended', winnerIds: win.map(function(w){ return w.uid; }), winnerNames: win.map(function(w){ return String(w.name || '').slice(0, 60); }), endedAt: FV.serverTimestamp() })
+        .then(function(){ return adminDone('🏆 انتهت المسابقة وانعلن الفائزين'); })
+        .then(function(){ if(win.length) openModal('<div class="modal-content wide-modal"><h3>🏆 الفائزون (تواصل معهم وسلّمهم الجائزة)</h3>' + entriesTable(c, win) + '<div class="meta">لإضافة الجائزة كرصيد: تبويب الزباين ← ± رصيد.</div><button class="btn btn-outline" data-act="closemodal">إغلاق</button></div>'); });
+    }).catch(adminErr);
+  },
+  ctdel: function(id){
+    if(!confirm('حذف المسابقة مع كل مشتركيها؟')) return;
+    db.collection('contests').doc(id).collection('entries').get().then(function(sn){
+      var b = db.batch(); sn.docs.forEach(function(d){ b.delete(d.ref); }); b.delete(db.collection('contests').doc(id)); return b.commit();
+    }).then(function(){ return adminDone('تم الحذف'); }).catch(adminErr);
+  },
+  addbal: function(){
+    var u = findUserByPhone($('abPhone').value), c = toCents($('abValue').value);
+    if(!u) return toast('ما في زبون مسجّل بهاد الرقم'); if(!(c > 0)) return toast('اكتب مبلغ صحيح');
+    db.collection('users').doc(u.id).update({ balance: FV.increment(c), totalIn: FV.increment(c) })
+      .then(function(){ return adminDone('✅ انضاف الرصيد لـ ' + u.name); }).catch(adminErr);
+  },
+  saverates: function(){
+    var r = { USD: 1 };
+    document.querySelectorAll('[data-rate]').forEach(function(inp){ var v = parseFloat(inp.value); if(v > 0) r[inp.dataset.rate] = v; });
+    db.collection('settings').doc('rates').set({ rates: r, updatedAt: FV.serverTimestamp() })
+      .then(function(){ return loadCatalog(); }).then(function(){ toast('✅ انحفظت الأسعار'); renderAdmin(); }).catch(adminErr);
+  },
+  livetry: function(){
+    var ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var tm = setTimeout(function(){ if(ctl) ctl.abort(); }, 8000);
+    toast('جاري الجلب...');
+    fetch('https://open.er-api.com/v6/latest/USD', ctl ? { signal: ctl.signal } : undefined).then(function(r){ return r.json(); }).then(function(j){
+      clearTimeout(tm);
+      if(!j || !j.rates || !j.rates.TRY) throw new Error('bad');
+      var inp = document.querySelector('[data-rate="TRY"]'); if(inp) inp.value = j.rates.TRY;
+      toast('✅ تم الجلب: ' + j.rates.TRY + ' (اضغط "حفظ الأسعار")');
+    }).catch(function(){ clearTimeout(tm); toast('تعذر الاتصال بمصدر الأسعار، عدّل السعر يدوي'); });
+  },
+  export: function(){
+    var b = new Blob([JSON.stringify({ users: D.users, orders: D.orders, codes: D.codes, games: D.games, sections: D.sections, categories: D.categories, addons: D.addons, methods: D.methods, deposits: D.deposits, site: SITE, rates: RATES }, null, 2)], { type: 'application/json' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'zoon-backup.json'; document.body.appendChild(a); a.click(); a.remove();
+  },
+  seed: function(){
+    var b = db.batch();
+    var g1 = db.collection('games').doc(), g2 = db.collection('games').doc(), c1 = db.collection('categories').doc(), c2 = db.collection('categories').doc();
+    b.set(g1, { name: 'PUBG Mobile', img: placeholderImg('PUBG Mobile', '#b8860b', '#1a1a1a') });
+    b.set(g2, { name: 'Free Fire', img: placeholderImg('Free Fire', '#c0392b', '#1a1a1a') });
+    b.set(c1, { game: g1.id, name: 'شدات UC' }); b.set(c2, { game: g2.id, name: 'جواهر 💎' });
+    [['60 UC', 100, c1], ['325 UC', 500, c1], ['660 UC', 1000, c1], ['100 جوهرة', 100, c2], ['310 جوهرة', 300, c2], ['520 جوهرة', 500, c2]].forEach(function(x){
+      b.set(db.collection('addons').doc(), { category: x[2].id, name: x[0], price: x[1] });
+    });
+    b.commit().then(function(){ return adminDone('✅ تمت الإضافة', true); }).catch(adminErr);
+  }
+};
+
+document.addEventListener('click', function(e){
+  var el = e.target.closest('[data-act]'); if(!el) return;
+  var f = A[el.dataset.act]; if(!f) return;
+  if(ADMIN_ACTS[el.dataset.act] && !(ME && isAdmin)) return;   // مجرد راحة؛ الحماية الحقيقية بقواعد Firestore
+  e.preventDefault();
+  f(el.dataset.id, el);
+});
+// 5 ضغطات سريعة على الشعار = دخول الإدارة (مناسب للموبايل)
+var tapN = 0, tapT = 0;
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.hero h1, .header .logo')) return;
+  var now = Date.now(); tapN = (now - tapT < 1500) ? tapN + 1 : 1; tapT = now;
+  if(tapN >= 5){ tapN = 0; openAdminGate(); }
+});
+document.addEventListener('error', function(e){
+  var t = e.target;
+  if(t && t.tagName === 'IMG' && !t.dataset.fb){ t.dataset.fb = '1'; t.src = FALLBACK_IMG; }
+}, true);
+$('modalBox').addEventListener('click', function(e){ if(e.target.id === 'modalBox') closeModal(); });
+['cvAmount', 'cvFrom', 'cvTo'].forEach(function(id){ $(id).addEventListener('input', renderConverter); $(id).addEventListener('change', renderConverter); });
+document.addEventListener('input', function(e){
+  if(!e.target) return;
+  if(e.target.id === 'userSearch') renderUsersTable();
+  else if(e.target.id === 'gameSearch') renderGames();
+  else if(e.target.id === 'qtyIn') updateQty();
+  else if(e.target.id === 'ordSearch') renderOrdersTable();
+  else if(e.target.id === 'depSearch') renderDepositsTable();
+  else if(e.target.id === 'depAmount') updateDepEq();
+});
+document.addEventListener('change', function(e){
+  var t = e.target; if(!t) return;
+  if(t.dataset && t.dataset.imgpick){ var f = t.files && t.files[0]; if(f) pickImg(f, parseInt(t.dataset.max, 10) || 300, t.dataset.imgpick); }
+  else if(t.id === 'aaCat' || t.id === 'aaKind'){ renderAaPrices(); }
+  else if(t.id === 'edKind'){ toggleKindBox(); }
+  else if(t.id === 'ctType'){ $('ctFeeBox').style.display = t.value === 'draw' ? '' : 'none'; }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Enter') return;
+  var id = e.target.id;
+  if(id === 'loginEmail' || id === 'loginPass') login();
+  else if(id === 'admEmail' || id === 'admPass') admLogin();
+});
+window.addEventListener('hashchange', function(){ if(location.hash === ADMIN_HASH) openAdminGate(); });
+
+/* ================= تشغيل ================= */
+if(FB_ERR){ var w = $('fbWarn'); w.textContent = '⚠️ ' + FB_ERR; w.style.display = 'block'; }
+if(db){
+  // إعدادات الموقع عامة (قراءة بلا تسجيل دخول): الخلفية + نافذة الترحيب أول ما حدا يفتح المتجر
+  db.collection('settings').doc('site').get().then(function(d){ if(d.exists){ SITE = d.data(); applySite(); } maybePopup(); }).catch(function(e){ console.error(e); });
+}
+if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){ window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+try{ history.replaceState({ z: 'root' }, ''); history.pushState({ z: 'app', v: curView() }, ''); histReady = true; }catch(e){}
+updateHeader();
+if(!auth) showPage(location.hash === ADMIN_HASH ? 'adminlogin' : 'login');
+})();
+</script>
+</body>
+</html>
